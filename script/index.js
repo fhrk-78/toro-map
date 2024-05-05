@@ -16,7 +16,7 @@ const pins = [
 // * lidは[会社名_路線名]の形を使用する
 // * 順番はあいうえお順
 const lines = [
-    { name: "春晴本線", color: "blue", x: [243, 208, 164, 130, 123, 123], y: [-821, -831, -831, -831, -825, -471], pid: ['harumaki_chukai', '', '', '', '', 'haruza_haruza'], lid: "syunse_main" },
+    { name: "春晴本線", color: "blue", x: [243, 208, 164, 130, 123, 123], y: [-821, -831, -831, -831, -825, -471], pid: ['harumaki_chukai', null, null, null, null, 'haruza_haruza'], lid: "syunse_main" },
 ];
 /***************
  * Main Script *
@@ -25,6 +25,23 @@ let LOG = console.log;
 let ERROR = console.error;
 let tmp_x, tmp_y;
 let isMouseDown;
+// 優先キュー(要インスタンス化)
+class PriorityQueue {
+    nodes;
+    constructor() {
+        this.nodes = [];
+    }
+    enqueue(data, priority) {
+        this.nodes.push({ data, priority });
+        this.nodes.sort((a, b) => a.priority - b.priority);
+    }
+    dequeue() {
+        return this.nodes.shift();
+    }
+    isEmpty() {
+        return !this.nodes.length;
+    }
+}
 // Canvas操作ユーティリティ
 class CanvasHandler {
     static OFFSET_X = 1000;
@@ -98,97 +115,9 @@ class CanvasHandler {
 class Directions {
     static get(fromid, toid) {
         LOG("Direction GET", fromid, toid);
-        let { distances, previous } = Directions.dijkstra(Directions.generateNodeGraph(), fromid);
-        return { distances: distances, path: Directions.getPath(previous, fromid, toid) };
+        /*let {distances, previous} = Directions.dijkstra(Directions.generateNodeGraph(), fromid);
+        return {distances: distances, path: Directions.getPath(previous, fromid, toid)};*/
         //return Directions.dijkstra(Directions.generateNodeGraph(), fromid)[toid];
-    }
-    static generateNodeGraph() {
-        let graph = {};
-        // ノードの初期化
-        for (let pine of pins) {
-            graph[pine.pid] = {};
-        }
-        // 路線ごとに通るノードのエッジを計算する
-        for (let linee of lines) {
-            for (let i = 0; i < linee.pid.length; i++) {
-                let pin1 = linee.pid[i];
-                let pin2 = linee.pid[i + 1];
-                let pin1Details = pins.find(pin => pin.pid == pin1);
-                let pin2Details = pins.find(pin => pin.pid == pin2);
-                if (!pin1Details || !pin2Details) {
-                    continue;
-                }
-                // ピン間のユークリッド距離(直線距離)を求める
-                let distance = Math.sqrt(Math.pow(pins.find(pin => pin.name == pin1).x - pins.find(pin => pin.name == pin2).x, 2) +
-                    Math.pow(pins.find(pin => pin.name == pin1).y - pins.find(pin => pin.name == pin2).y, 2));
-                graph[pin1][pin2] = distance;
-                graph[pin2][pin1] = distance;
-            }
-        }
-        return graph;
-    }
-    static dijkstra(graph, start) {
-        LOG('dijkstra', graph, start);
-        /*let distances: {[node: string]: number} = {};
-        for (let node in graph) {
-            distances[node] = Infinity;
-        }
-        distances[start] = 0;
-
-        let queue: [number, string][] = [[0, start]];
-
-        while (queue.length != 0) {
-            queue.sort((a, b) => a[0] - b[0]);
-            let [currentDistance, currentNode] = queue.shift() as [number, string];
-
-            if (distances[currentNode] < currentDistance) {
-                continue;
-            }
-
-            for (let neighbor in graph[currentNode]) {
-                let distance = currentDistance + graph[currentNode][neighbor];
-
-                if (distance < distances[neighbor]) {
-                    distances[neighbor] = distance;
-                    queue.push([distance, neighbor]);
-                }
-            }
-        }
-
-        return distances;*/
-        let distances = {};
-        let previous = {};
-        for (let node in graph) {
-            distances[node] = Infinity;
-            previous[node] = '';
-        }
-        distances[start] = 0;
-        let queue = [[0, start]];
-        while (queue.length != 0) {
-            queue.sort((a, b) => a[0] - b[0]);
-            let [currentDistance, currentNode] = queue.shift();
-            if (distances[currentNode] < currentDistance) {
-                continue;
-            }
-            for (let neighbor in graph[currentNode]) {
-                let distance = currentDistance + graph[currentNode][neighbor];
-                if (distance < distances[neighbor]) {
-                    distances[neighbor] = distance;
-                    previous[neighbor] = currentNode;
-                    queue.push([distance, neighbor]);
-                }
-            }
-        }
-        return { distances, previous };
-    }
-    static getPath(previous, start, end) {
-        LOG('getPath', previous, start, end);
-        let path = [];
-        for (let node = end; node != start; node = previous[node]) {
-            path.unshift(node);
-        }
-        path.unshift(start);
-        return path;
     }
 }
 // 経路結果コントロール
@@ -222,6 +151,8 @@ let topoint = document.getElementById('toPoint');
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext('2d');
 let main = document.getElementById('main');
+let directionTab = document.getElementById('directions');
+let informationTab = document.getElementById('information');
 function resize() {
     LOG('Window Resized');
     canvas.width = CanvasHandler.OFFSET_X * 2;
@@ -268,20 +199,26 @@ function outputresult() {
             break;
         }
     }
-    let result = Directions.get(f, t);
+    /*let result = Directions.get(f!, t!);
     LOG(result);
-    let realdistance = result.distances[t] * 10;
+    let realdistance = result.distances[t!] * 10;
     let min = realdistance / TRAIN_SPEED % 60;
-    let hour = (realdistance / TRAIN_SPEED - min) / 60;
-    if (hour == 0) {
-        hour = null;
-    }
+    let hour: number | null = (realdistance / TRAIN_SPEED - min) / 60;
+    if (hour == 0) {hour = null}
     DirectionsResult.add(HTMLBuilder.directionResultCard("train", hour, min, realdistance, "", "startNavi", ``));
-    LOG(HTMLBuilder.directionResultCard("train", hour, min, realdistance, "", "startNavi", ``));
+    LOG(HTMLBuilder.directionResultCard("train", hour, min, realdistance, "", "startNavi", ``));*/
 }
 function startNavi() {
     //
 }
 function dismiss_donate() {
     document.getElementById('marumasa_donation')?.remove();
+}
+function tabDir() {
+    directionTab.classList.remove('hide');
+    informationTab.classList.add('hide');
+}
+function tabInfo() {
+    informationTab.classList.remove('hide');
+    directionTab.classList.add('hide');
 }

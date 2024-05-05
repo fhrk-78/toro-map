@@ -76,7 +76,25 @@ a.s.text:hover {
 a.s.text:active {
   transform: scale(0.95);
 }
+a.s.tab {
+  border-bottom: 3px solid gray;
+  display: inline-block;
+  padding: 7px 15px;
+  text-decoration: none;
+  color: black;
+  transition: 0.3s;
+}
+a.s.tab:hover {
+  background-color: rgb(230, 230, 230);
+}
+a.s.tab:active {
+  transform: scale(0.95);
+}
 
 div.space10px {
   height: 10px;
+}
+
+section.hide {
+  display: none;
 }/*# sourceMappingURL=common.css.map */

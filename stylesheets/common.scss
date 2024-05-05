@@ -74,8 +74,26 @@ a.s {
             transform: scale(0.95);
         }
     }
+    &.tab {
+        border-bottom: 3px solid gray;
+        display: inline-block;
+        padding: 7px 15px;
+        text-decoration: none;
+        color: black;
+        transition: .3s;
+        &:hover {
+            background-color: rgb(230, 230, 230);
+        }
+        &:active {
+            transform: scale(0.95);
+        }
+    }
 }
 
 div.space10px {
     height: 10px;
+}
+
+section.hide {
+    display: none;
 }

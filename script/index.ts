@@ -15,8 +15,13 @@ interface line {
     color: string,
     x: number[],
     y: number[],
-    pid: string[],
+    pid: (string | null)[],
     lid: string,
+}
+
+interface PriorityQueueNode {
+    data: string;
+    priority: number;
 }
 
 type Graph = {
@@ -43,7 +48,7 @@ const pins: pin[] = [
 // * 順番はあいうえお順
 
 const lines: line[] = [
-    {name:"春晴本線", color: "blue", x:[243, 208, 164, 130, 123, 123], y:[-821, -831, -831, -831, -825, -471], pid:['harumaki_chukai', '', '', '', '', 'haruza_haruza'], lid:"syunse_main"},
+    {name:"春晴本線", color: "blue", x:[243, 208, 164, 130, 123, 123], y:[-821, -831, -831, -831, -825, -471], pid:['harumaki_chukai', null, null, null, null, 'haruza_haruza'], lid:"syunse_main"},
 ]
 
 /***************
@@ -55,6 +60,28 @@ let ERROR = console.error;
 
 let tmp_x: number, tmp_y: number;
 let isMouseDown: boolean;
+
+// 優先キュー(要インスタンス化)
+class PriorityQueue {
+    private nodes: PriorityQueueNode[];
+
+    constructor() {
+        this.nodes = [];
+    }
+
+    enqueue(data: string, priority: number): void {
+        this.nodes.push({data, priority});
+        this.nodes.sort((a, b) => a.priority - b.priority);
+    }
+
+    dequeue(): PriorityQueueNode | undefined {
+        return this.nodes.shift();
+    }
+
+    isEmpty(): boolean {
+        return !this.nodes.length;
+    }
+}
 
 // Canvas操作ユーティリティ
 class CanvasHandler {
@@ -140,12 +167,12 @@ class CanvasHandler {
 class Directions {
     static get(fromid: string, toid: string) {
         LOG("Direction GET", fromid, toid);
-        let {distances, previous} = Directions.dijkstra(Directions.generateNodeGraph(), fromid);
-        return {distances: distances, path: Directions.getPath(previous, fromid, toid)};
+        /*let {distances, previous} = Directions.dijkstra(Directions.generateNodeGraph(), fromid);
+        return {distances: distances, path: Directions.getPath(previous, fromid, toid)};*/
         //return Directions.dijkstra(Directions.generateNodeGraph(), fromid)[toid];
     }
 
-    static generateNodeGraph() {
+    /*static generateNodeGraph() {
         let graph: Graph = {}
 
         // ノードの初期化
@@ -178,10 +205,10 @@ class Directions {
         }
 
         return graph;
-    }
+    }*/
 
-    static dijkstra(graph: Graph, start: string)/*: {[node: string]: number}*/ {
-        LOG('dijkstra', graph, start);
+    //static dijkstra(graph: Graph, start: string)/*: {[node: string]: number}*/ {
+        //LOG('dijkstra', graph, start);
         /*let distances: {[node: string]: number} = {};
         for (let node in graph) {
             distances[node] = Infinity;
@@ -209,7 +236,7 @@ class Directions {
         }
 
         return distances;*/
-        let distances: {[node: string]: number} = {};
+        /*let distances: {[node: string]: number} = {};
         let previous: {[node: string]: string} = {};
       
         for (let node in graph) {
@@ -240,9 +267,9 @@ class Directions {
         }
       
         return {distances, previous};
-    }
+    }*/
 
-    static getPath(previous: {[node: string]: string}, start: string, end: string): string[] {
+    /*static getPath(previous: {[node: string]: string}, start: string, end: string): string[] {
         LOG('getPath', previous, start, end);
         let path: string[] = [];
         for (let node = end; node != start; node = previous[node]) {
@@ -250,7 +277,21 @@ class Directions {
         }
         path.unshift(start);
         return path;
-    }
+    }*/
+    /*static getPath(previous: {[node: string]: string}, start: string, end: string): string[] {
+        LOG('getPath', previous, start, end);
+        let path: string[] = [];
+        let visited: {[node: string]: boolean} = {};
+        for (let node = end; node != start; node = previous[node]) {
+            if (visited[node]) {
+                throw new Error("Detected a loop from " + node);
+            }
+            path.unshift(node);
+            visited[node] = true;
+        }
+        path.unshift(start);
+        return path;
+    }*/
 }
 
 // 経路結果コントロール
@@ -288,6 +329,9 @@ let topoint = document.getElementById('toPoint') as HTMLInputElement;
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 let main = document.getElementById('main') as HTMLElement;
+
+let directionTab = document.getElementById('directions')!;
+let informationTab = document.getElementById('information')!;
 
 function resize() {
     LOG('Window Resized');
@@ -341,14 +385,14 @@ function outputresult() {
             break;
         }
     }
-    let result = Directions.get(f!, t!);
+    /*let result = Directions.get(f!, t!);
     LOG(result);
     let realdistance = result.distances[t!] * 10;
     let min = realdistance / TRAIN_SPEED % 60;
     let hour: number | null = (realdistance / TRAIN_SPEED - min) / 60;
     if (hour == 0) {hour = null}
     DirectionsResult.add(HTMLBuilder.directionResultCard("train", hour, min, realdistance, "", "startNavi", ``));
-    LOG(HTMLBuilder.directionResultCard("train", hour, min, realdistance, "", "startNavi", ``));
+    LOG(HTMLBuilder.directionResultCard("train", hour, min, realdistance, "", "startNavi", ``));*/
 }
 
 function startNavi() {
@@ -357,4 +401,14 @@ function startNavi() {
 
 function dismiss_donate() {
     document.getElementById('marumasa_donation')?.remove();
+}
+
+function tabDir() {
+    directionTab.classList.remove('hide');
+    informationTab.classList.add('hide');
+}
+
+function tabInfo() {
+    informationTab.classList.remove('hide');
+    directionTab.classList.add('hide');
 }
