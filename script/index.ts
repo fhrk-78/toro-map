@@ -25,6 +25,8 @@ type Graph = {
     };
 };
 
+const TRAIN_SPEED = 420; // m/min
+
 //   -------------[WARN]------------
 // * xとyは1の位の桁を切り落とす
 // * pidは[都市名_駅名]の形を使用する
@@ -49,6 +51,7 @@ const lines: line[] = [
  ***************/
 
 let LOG = console.log;
+let ERROR = console.error;
 
 let tmp_x: number, tmp_y: number;
 let isMouseDown: boolean;
@@ -66,6 +69,7 @@ class CanvasHandler {
     static cy = (ay: number) => (CanvasHandler.OFFSET_Y+CanvasHandler.local_y+ay)*(CanvasHandler.local_size);
 
     static render() {
+        LOG('Render Updated');
         CanvasHandler.clear();
         //for (let i = 0; i < pins.length; i++) {
         //    const e = pins[i];
@@ -77,12 +81,14 @@ class CanvasHandler {
     }
 
     static clear() {
+        LOG('Canvas Clear');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "rgb(230, 230, 230)";
         ctx.fillRect(0, 0, CanvasHandler.OFFSET_X * 2, CanvasHandler.OFFSET_Y * 2);
     }
 
     static lineRender(x: number[], y: number[], color: string) {
+        LOG("RenderLine", x, y, color);
         CanvasHandler.strokeWidth(5);
         CanvasHandler.strokeStyle(color);
         ctx.beginPath();
@@ -94,12 +100,14 @@ class CanvasHandler {
     }
 
     static dragstart(e: MouseEvent) {
+        LOG("Start Drag");
         isMouseDown = true;
         tmp_x = e.offsetX;
         tmp_y = e.offsetY;
     }
 
     static dragupdate(e: MouseEvent) {
+        LOG("Update Drag");
         if(isMouseDown) {
             if (tmp_x == undefined || tmp_y == undefined) {
                 return;
@@ -114,10 +122,12 @@ class CanvasHandler {
     }
 
     static dragend(e: MouseEvent) {
+        LOG("End Drag");
         isMouseDown = false;
     }
 
     static wheelzoom(e: WheelEvent) {
+        LOG("Update WheelZoom");
         CanvasHandler.local_size += e.deltaY * -0.001;
         CanvasHandler.render();
     }
@@ -129,7 +139,10 @@ class CanvasHandler {
 // 経路計算ユーティリティ
 class Directions {
     static get(fromid: string, toid: string) {
-        return Directions.dijkstra(Directions.generateNodeGraph(), fromid)[toid];
+        LOG("Direction GET", fromid, toid);
+        let {distances, previous} = Directions.dijkstra(Directions.generateNodeGraph(), fromid);
+        return {distances: distances, path: Directions.getPath(previous, fromid, toid)};
+        //return Directions.dijkstra(Directions.generateNodeGraph(), fromid)[toid];
     }
 
     static generateNodeGraph() {
@@ -146,6 +159,13 @@ class Directions {
                 let pin1 = linee.pid[i];
                 let pin2 = linee.pid[i + 1];
 
+                let pin1Details = pins.find(pin => pin.pid == pin1);
+                let pin2Details = pins.find(pin => pin.pid == pin2);
+
+                if (!pin1Details || !pin2Details) {
+                   continue;
+                }
+
                 // ピン間のユークリッド距離(直線距離)を求める
                 let distance = Math.sqrt(
                     Math.pow(pins.find(pin => pin.name == pin1)!.x - pins.find(pin => pin.name == pin2)!.x, 2) +
@@ -160,8 +180,9 @@ class Directions {
         return graph;
     }
 
-    static dijkstra(graph: Graph, start: string): {[node: string]: number} {
-        let distances: {[node: string]: number} = {};
+    static dijkstra(graph: Graph, start: string)/*: {[node: string]: number}*/ {
+        LOG('dijkstra', graph, start);
+        /*let distances: {[node: string]: number} = {};
         for (let node in graph) {
             distances[node] = Infinity;
         }
@@ -187,7 +208,48 @@ class Directions {
             }
         }
 
-        return distances;
+        return distances;*/
+        let distances: {[node: string]: number} = {};
+        let previous: {[node: string]: string} = {};
+      
+        for (let node in graph) {
+          distances[node] = Infinity;
+          previous[node] = '';
+        }
+        distances[start] = 0;
+      
+        let queue: [number, string][] = [[0, start]];
+      
+        while (queue.length != 0) {
+          queue.sort((a, b) => a[0] - b[0]);
+          let [currentDistance, currentNode] = queue.shift() as [number, string];
+      
+          if (distances[currentNode] < currentDistance) {
+            continue;
+          }
+      
+          for (let neighbor in graph[currentNode]) {
+            let distance = currentDistance + graph[currentNode][neighbor];
+      
+            if (distance < distances[neighbor]) {
+              distances[neighbor] = distance;
+              previous[neighbor] = currentNode;
+              queue.push([distance, neighbor]);
+            }
+          }
+        }
+      
+        return {distances, previous};
+    }
+
+    static getPath(previous: {[node: string]: string}, start: string, end: string): string[] {
+        LOG('getPath', previous, start, end);
+        let path: string[] = [];
+        for (let node = end; node != start; node = previous[node]) {
+          path.unshift(node);
+        }
+        path.unshift(start);
+        return path;
     }
 }
 
@@ -198,13 +260,13 @@ class DirectionsResult {
     }
 
     static add(html: string) {
-        directionresults.insertAdjacentHTML('afterbegin', html)
+        directionresults.insertAdjacentHTML('afterbegin', html);
     }
 }
 
 // テンプレート化されたHTMLの生成ユーティリティ
 class HTMLBuilder {
-    static directionResultCard(icon: "train" | "car", hour: number | null = null, min: number, about: string, returnmethodname: string, returnmethodparam: string = "") {
+    static directionResultCard(icon: "train" | "car", hour: number | null = null, min: number, distance: number, about: string, returnmethodname: string, returnmethodparam: string = "") {
         let i;
         switch (icon) {
             case "train":
@@ -214,7 +276,7 @@ class HTMLBuilder {
                 i = "c";
                 break;
         }
-        return `<div class="di_res"><div><div class="i ${i}"></div><div><h3>${hour == null ? "" : `${hour}時間`}${String(min)}分</h3><p>${about}</p></div></div><div><a href="javascript:${returnmethodname}(${returnmethodparam});" class="s text">開始</a></div></div>`;
+        return `<div class="di_res"><div><div class="i ${i}"></div><div><h3>${hour == null ? "" : `${hour}時間`}${String(min)}分 / ${distance}m</h3><p>${about}</p></div></div><div><a href="javascript:${returnmethodname}(${returnmethodparam});" class="s text">開始</a></div></div>`;
     }
 }
 
@@ -228,6 +290,7 @@ const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 let main = document.getElementById('main') as HTMLElement;
 
 function resize() {
+    LOG('Window Resized');
     canvas.width = CanvasHandler.OFFSET_X*2;
     canvas.height = CanvasHandler.OFFSET_Y*2;
     canvas.style.width = String(main.clientWidth) + "px";
@@ -264,7 +327,32 @@ function reverseft() {
 }
 
 function outputresult() {
-    Directions.get(frompoint.value, topoint.value);
+    if (frompoint.value == "" || topoint.value == "") {return;}
+    let f: string, t: string;
+    for(let i = 0; i < pins.length; i++) {
+        if(pins[i].name === frompoint.value) {
+            f = pins[i].pid;
+            break;
+        }
+    }
+    for(let i = 0; i < pins.length; i++) {
+        if(pins[i].name === topoint.value) {
+            t = pins[i].pid;
+            break;
+        }
+    }
+    let result = Directions.get(f!, t!);
+    LOG(result);
+    let realdistance = result.distances[t!] * 10;
+    let min = realdistance / TRAIN_SPEED % 60;
+    let hour: number | null = (realdistance / TRAIN_SPEED - min) / 60;
+    if (hour == 0) {hour = null}
+    DirectionsResult.add(HTMLBuilder.directionResultCard("train", hour, min, realdistance, "", "startNavi", ``));
+    LOG(HTMLBuilder.directionResultCard("train", hour, min, realdistance, "", "startNavi", ``));
+}
+
+function startNavi() {
+    //
 }
 
 function dismiss_donate() {
