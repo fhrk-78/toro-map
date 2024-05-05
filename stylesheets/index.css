@@ -1,0 +1,76 @@
+nav {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  width: 50vw;
+  height: 7vh;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50px;
+}
+
+body div.flex {
+  display: flex;
+}
+body div.flex aside {
+  width: 25vw;
+  height: 100vh;
+  background-color: white;
+}
+body div.flex main {
+  width: 75vw;
+  height: 100vh;
+  background-color: black;
+}
+
+div.di_res {
+  border: 1px solid rgb(77, 77, 77);
+  border-radius: 15px;
+  margin: calc(5% - 2px);
+  margin-top: 0;
+  width: 90%;
+}
+div.di_res div {
+  display: flex;
+}
+div.di_res div div.i {
+  background-repeat: no-repeat;
+  width: 40px;
+  height: 40px;
+  background-size: 40px;
+  background-position: center;
+  padding: 5px 10px;
+  padding-top: 25px;
+}
+div.di_res div div.i.t {
+  background-image: url(./../assets/icons/train.svg);
+}
+div.di_res div div.i.t {
+  background-image: url(./../assets/icons/car.svg);
+}
+div.di_res div div {
+  display: inline-block;
+  padding: 10px 0;
+}
+div.di_res div div h3 {
+  margin: 0;
+  font-weight: normal;
+  padding: 5px;
+  padding-bottom: 0;
+}
+div.di_res div div p {
+  margin: 0;
+  color: rgb(77, 77, 77);
+  padding: 5px;
+}
+
+div#marumasa_donation {
+  background-color: white;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  border-radius: 15px;
+}
+div#marumasa_donation p {
+  margin: 0;
+  padding: 12px;
+}/*# sourceMappingURL=index.css.map */
