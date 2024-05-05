@@ -7,7 +7,7 @@ interface pin {
     author: string,
     x: number,
     y: number,
-    cid: string,
+    pid: string,
 }
 
 interface line {
@@ -15,25 +15,33 @@ interface line {
     color: string,
     x: number[],
     y: number[],
-    cid: string,
+    pid: string[],
+    lid: string,
 }
+
+type Graph = {
+    [node: string]: {
+        [neighbor: string]: number;
+    };
+};
 
 //   -------------[WARN]------------
 // * xとyは1の位の桁を切り落とす
-// * cidは[都市名_駅名]の形を使用する
+// * pidは[都市名_駅名]の形を使用する
 // * 順番はあいうえお順
 
 const pins: pin[] = [
-    {name:"晴牧駅", author:"pizzaharumaki", x:232, y:923, cid:"harumaki_harumaki"},
+    {name:"中海駅", author:"pizzaharumaki", x:223, y:-821, pid:"harumaki_chukai"},
+    {name:"春座駅", author:"hosiharu", x:123, y:-471, pid:"haruza_haruza"},
 ]
 
 //   -------------[WARN]------------
 // * xとyは1の位の桁を切り落とす
-// * cidは[都市名_駅名]の形を使用する
+// * lidは[会社名_路線名]の形を使用する
 // * 順番はあいうえお順
 
 const lines: line[] = [
-    {name:"春晴本線", color: "blue", x:[243, 208, 164, 130, 123, 123], y:[-821, -831, -831, -831, -825, -471], cid:"syunse_main"},
+    {name:"春晴本線", color: "blue", x:[243, 208, 164, 130, 123, 123], y:[-821, -831, -831, -831, -825, -471], pid:['harumaki_chukai', '', '', '', '', 'haruza_haruza'], lid:"syunse_main"},
 ]
 
 /***************
@@ -123,6 +131,36 @@ class Directions {
     static get(fromname: string, toname: string) {
         //
     }
+
+    static dijkstra(graph: Graph, start: string): {[node: string]: number} {
+        let distances: {[node: string]: number} = {};
+        for (let node in graph) {
+            distances[node] = Infinity;
+        }
+        distances[start] = 0;
+
+        let queue: [number, string][] = [[0, start]];
+
+        while (queue.length != 0) {
+            queue.sort((a, b) => a[0] - b[0]);
+            let [currentDistance, currentNode] = queue.shift() as [number, string];
+
+            if (distances[currentNode] < currentDistance) {
+                continue;
+            }
+
+            for (let neighbor in graph[currentNode]) {
+                let distance = currentDistance + graph[currentNode][neighbor];
+
+                if (distance < distances[neighbor]) {
+                    distances[neighbor] = distance;
+                    queue.push([distance, neighbor]);
+                }
+            }
+        }
+
+        return distances;
+    }
 }
 
 // 経路結果コントロール
@@ -173,7 +211,7 @@ function init() {
     resize();
 
     pins.forEach((v: pin, i: number, a: pin[]) => {
-        pinlist.insertAdjacentHTML('afterbegin', `<option value="${v.name}" id="pin_${v.cid}"></option>`);
+        pinlist.insertAdjacentHTML('afterbegin', `<option value="${v.name}" id="pin_${v.pid}"></option>`);
     });
 
     window.onresize = resize;
