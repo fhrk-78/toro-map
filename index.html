@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TORO交通情報ネットワークマップ</title>
+    <link rel="stylesheet" href="./stylesheets/common.css" />
+    <link rel="stylesheet" href="./stylesheets/index.css" />
+</head>
+<body>
+    <nav></nav>
+    <div class="flex">
+        <aside>
+            <section id="directions">
+                <datalist id="pointList">
+                    <!-- Add by script -->
+                </datalist>
+                <input type="search" name="fromPoint" id="fromPoint" list="pointList" class="s" placeholder="出発地" /><a href="javascript:reverseft();" class="s icon sync"></a>
+                <input type="search" name="toPoint" id="toPoint" list="pointList" class="s" placeholder="目的地" /><!--<a href="javascript:" class="s icon add_location"></a>-->
+                <div class="space10px"></div>
+                <a href="javascript:outputresult();" class="s text" style="margin-left: 8vw;">この条件で計算</a>
+                <div class="space10px"></div>
+                <div id="directionresults">
+                    <!-- Add by script -->
+                </div>
+            </section>
+        </aside>
+        <main id="main">
+            <canvas id="canvas"></canvas>
+        </main>
+    </div>
+
+    <div id="marumasa_donation">
+        <p>このアプリの開発にあたって多大な協力者となったMarumasaさんは、<br/>
+            Minecraft向けのModやプラグインを全て無料でオープンソースとして公開してきました。<br/>
+            <span style="color: green;">もしよければ寄付をお願いします。</span> ( Amazonギフトカード 又は Paypay が使えます )</p>
+        <a href="https://donate.marumasa.dev/" class="s text" target="_blank" rel="noopener noreferrer" style="border-color: green; color: green;">寄付ページへ</a>
+        <a href="javascript:dismiss_donate();" class="s text" style="margin-left: 0;">無視</a>
+    </div>
+
+    <script src="./script/index.js"></script>
+</body>
+</html>
