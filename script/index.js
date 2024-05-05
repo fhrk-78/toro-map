@@ -4,17 +4,18 @@
  ***************/
 //   -------------[WARN]------------
 // * xとyは1の位の桁を切り落とす
-// * cidは[都市名_駅名]の形を使用する
+// * pidは[都市名_駅名]の形を使用する
 // * 順番はあいうえお順
 const pins = [
-    { name: "晴牧駅", author: "pizzaharumaki", x: 232, y: 923, cid: "harumaki_harumaki" },
+    { name: "中海駅", author: "pizzaharumaki", x: 223, y: -821, pid: "harumaki_chukai" },
+    { name: "春座駅", author: "hosiharu", x: 123, y: -471, pid: "haruza_haruza" },
 ];
 //   -------------[WARN]------------
 // * xとyは1の位の桁を切り落とす
-// * cidは[都市名_駅名]の形を使用する
+// * lidは[会社名_路線名]の形を使用する
 // * 順番はあいうえお順
 const lines = [
-    { name: "春晴本線", color: "blue", x: [243, 208, 164, 130, 123, 123], y: [-821, -831, -831, -831, -825, -471], cid: "syunse_main" },
+    { name: "春晴本線", color: "blue", x: [243, 208, 164, 130, 123, 123], y: [-821, -831, -831, -831, -825, -471], pid: ['harumaki_chukai', '', '', '', '', 'haruza_haruza'], lid: "syunse_main" },
 ];
 /***************
  * Main Script *
@@ -89,6 +90,48 @@ class Directions {
     static get(fromname, toname) {
         //
     }
+    static generateNodeGraph() {
+        let graph = {};
+        // ノードの初期化
+        for (let pine of pins) {
+            graph[pine.pid] = {};
+        }
+        // 路線ごとに通るノードのエッジを計算する
+        for (let linee of lines) {
+            for (let i = 0; i < linee.pid.length; i++) {
+                let pin1 = linee.pid[i];
+                let pin2 = linee.pid[i + 1];
+                // ピン間のユークリッド距離(直線距離)を求める
+                let distance = Math.sqrt(Math.pow(pins.find(pin => pin.name == pin1).x - pins.find(pin => pin.name == pin2).x, 2) +
+                    Math.pow(pins.find(pin => pin.name == pin1).y - pins.find(pin => pin.name == pin2).y, 2));
+                graph[pin1][pin2] = distance;
+                graph[pin2][pin1] = distance;
+            }
+        }
+    }
+    static dijkstra(graph, start) {
+        let distances = {};
+        for (let node in graph) {
+            distances[node] = Infinity;
+        }
+        distances[start] = 0;
+        let queue = [[0, start]];
+        while (queue.length != 0) {
+            queue.sort((a, b) => a[0] - b[0]);
+            let [currentDistance, currentNode] = queue.shift();
+            if (distances[currentNode] < currentDistance) {
+                continue;
+            }
+            for (let neighbor in graph[currentNode]) {
+                let distance = currentDistance + graph[currentNode][neighbor];
+                if (distance < distances[neighbor]) {
+                    distances[neighbor] = distance;
+                    queue.push([distance, neighbor]);
+                }
+            }
+        }
+        return distances;
+    }
 }
 // 経路結果コントロール
 class DirectionsResult {
@@ -131,7 +174,7 @@ function resize() {
 function init() {
     resize();
     pins.forEach((v, i, a) => {
-        pinlist.insertAdjacentHTML('afterbegin', `<option value="${v.name}" id="pin_${v.cid}"></option>`);
+        pinlist.insertAdjacentHTML('afterbegin', `<option value="${v.name}" id="pin_${v.pid}"></option>`);
     });
     window.onresize = resize;
     canvas.addEventListener('mousedown', CanvasHandler.dragstart);

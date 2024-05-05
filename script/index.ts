@@ -128,8 +128,36 @@ class CanvasHandler {
 
 // 経路計算ユーティリティ
 class Directions {
-    static get(fromname: string, toname: string) {
-        //
+    static get(fromid: string, toid: string) {
+        return Directions.dijkstra(Directions.generateNodeGraph(), fromid)[toid];
+    }
+
+    static generateNodeGraph() {
+        let graph: Graph = {}
+
+        // ノードの初期化
+        for (let pine of pins) {
+            graph[pine.pid] = {}
+        }
+
+        // 路線ごとに通るノードのエッジを計算する
+        for (let linee of lines) {
+            for (let i = 0; i < linee.pid.length; i++) {
+                let pin1 = linee.pid[i];
+                let pin2 = linee.pid[i + 1];
+
+                // ピン間のユークリッド距離(直線距離)を求める
+                let distance = Math.sqrt(
+                    Math.pow(pins.find(pin => pin.name == pin1)!.x - pins.find(pin => pin.name == pin2)!.x, 2) +
+                    Math.pow(pins.find(pin => pin.name == pin1)!.y - pins.find(pin => pin.name == pin2)!.y, 2)
+                );
+
+                graph[pin1][pin2] = distance;
+                graph[pin2][pin1] = distance;
+            }
+        }
+
+        return graph;
     }
 
     static dijkstra(graph: Graph, start: string): {[node: string]: number} {
