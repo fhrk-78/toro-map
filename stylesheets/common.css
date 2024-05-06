@@ -35,6 +35,9 @@ input[type=search].s::-webkit-search-cancel-button {
   display: none;
 }
 
+a.s {
+  position: relative;
+}
 a.s.icon {
   position: absolute;
   display: inline-block;
@@ -83,6 +86,8 @@ a.s.tab {
   text-decoration: none;
   color: black;
   transition: 0.3s;
+  font-size: 1.25rem;
+  padding-left: 50px;
 }
 a.s.tab:hover {
   background-color: rgb(230, 230, 230);
@@ -91,8 +96,29 @@ a.s.tab:active {
   transform: scale(0.95);
 }
 
+div.s.i {
+  left: 15px;
+  width: 30px;
+  height: 30px;
+  background-repeat: no-repeat;
+  background-size: 30px;
+  background-position: center;
+  display: inline-block;
+  position: absolute;
+}
+div.s.i.dir {
+  background-image: url(./../assets/icons/directions.svg);
+}
+div.s.i.info {
+  background-image: url(./../assets/icons/info.svg);
+}
+
 div.space10px {
   height: 10px;
+}
+
+div.tabrail {
+  margin: 10px;
 }
 
 section.hide {

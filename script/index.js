@@ -6,17 +6,24 @@ const TRAIN_SPEED = 420; // m/min
 //   -------------[WARN]------------
 // * xとyは1の位の桁を切り落とす
 // * pidは[都市名_駅名]の形を使用する
-// * 順番はあいうえお順
 const pins = [
-    { name: "中海駅", author: "pizzaharumaki", x: 223, y: -821, pid: "harumaki_chukai" },
-    { name: "春座駅", author: "hosiharu", x: 123, y: -471, pid: "haruza_haruza" },
+    { name: "小宮山口駅", x: 544, y: -458, pid: 'komiya_komiyasanguchi' },
+    { name: "小宮駅", x: 517, y: -449, pid: "komiya_komiya" },
+    { name: "小宮格闘センター前駅", x: 484, y: -433, pid: "komiya_komiyafightingcenter" },
+    { name: "小宮南駅", x: 527, y: -430, pid: "komiya_komiyaminami" },
+    { name: "小宮村駅", x: 458, y: -449, pid: "komiya_komiyamura" },
+    { name: "赤羽駅", x: 435, y: -449, pid: "akabane_akabane" },
+    { name: "T村駅", x: 449, y: -410, pid: "tmura_tmura" },
+    { name: "北小宮駅", x: 550, y: -478, pid: "komiya_kitakomiya" },
+    { name: "北平駅", x: 550, y: -478, pid: "komiya_kitahira" },
 ];
 //   -------------[WARN]------------
 // * xとyは1の位の桁を切り落とす
 // * lidは[会社名_路線名]の形を使用する
-// * 順番はあいうえお順
 const lines = [
-    { name: "春晴本線", color: "blue", x: [243, 208, 164, 130, 123, 123], y: [-821, -831, -831, -831, -825, -471], pid: ['harumaki_chukai', null, null, null, null, 'haruza_haruza'], lid: "syunse_main" },
+    { name: "小宮電鉄線(テストデータ1)", color: "orange", pid: ["komiya_komiyafightingcenter", "komiya_komiya", "komiya_komiyasanguchi", "komiya_kitakomiya"], lid: "komiya_1" },
+    { name: "小宮電鉄線(テストデータ2)", color: "orange", pid: ["komiya_komiyaminami", "komiya_komiya", "komiya_komiyamura", "akabane_akabane", "tmura_tmura"], lid: "komiya_2" },
+    { name: "RR秘境線(テストデータ)", color: "yellow", pid: ["komiya_komiyaminami", "komiya_komiyasanguchi", "komiya_kitahira"], lid: "komiya_2" },
 ];
 /***************
  * Main Script *
@@ -58,8 +65,17 @@ class CanvasHandler {
         //    const e = pins[i];
         //}
         for (let j = 0; j < lines.length; j++) {
+            let x = [], y = [];
             const e = lines[j];
-            CanvasHandler.lineRender(e.x, e.y, e.color);
+            for (let k of e.pid) {
+                for (let l = 0; l < pins.length; l++) {
+                    if (pins[l].pid == k) {
+                        x.push(pins[l].x);
+                        y.push(pins[l].y);
+                    }
+                }
+            }
+            CanvasHandler.lineRender(x, y, e.color, lines[j].bezier);
         }
     }
     static clear() {
@@ -68,14 +84,20 @@ class CanvasHandler {
         ctx.fillStyle = "rgb(230, 230, 230)";
         ctx.fillRect(0, 0, CanvasHandler.OFFSET_X * 2, CanvasHandler.OFFSET_Y * 2);
     }
-    static lineRender(x, y, color) {
+    static lineRender(x, y, color, bezier) {
         LOG("RenderLine", x, y, color);
         CanvasHandler.strokeWidth(5);
         CanvasHandler.strokeStyle(color);
         ctx.beginPath();
+        let isBezier = (bezier != undefined);
         ctx.moveTo(CanvasHandler.cx(x[0]), CanvasHandler.cy(y[0]));
         for (let i = 1; i < x.length; i++) {
-            ctx.lineTo(CanvasHandler.cx(x[i]), CanvasHandler.cy(y[i]));
+            if (isBezier) {
+                ctx.quadraticCurveTo(CanvasHandler.cx(bezier[0][i]), CanvasHandler.cy(bezier[1][i]), CanvasHandler.cx(x[i]), CanvasHandler.cy(y[i]));
+            }
+            else {
+                ctx.lineTo(CanvasHandler.cx(x[i]), CanvasHandler.cy(y[i]));
+            }
         }
         ctx.stroke();
     }
@@ -86,8 +108,8 @@ class CanvasHandler {
         tmp_y = e.offsetY;
     }
     static dragupdate(e) {
-        LOG("Update Drag");
         if (isMouseDown) {
+            LOG("Update Drag");
             if (tmp_x == undefined || tmp_y == undefined) {
                 return;
             }
