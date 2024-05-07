@@ -2,10 +2,57 @@ nav {
     position: absolute;
     right: 20px;
     top: 20px;
-    width: 50vw;
+    //width: 50vw;
     height: 7vh;
     background-color: rgba($color: white, $alpha: 0.7);
     border-radius: 50px;
+}
+
+div#routeGuide {
+    position: absolute;
+    right: 20px;
+    top: calc(40px + 7vh);
+    width: 20vw;
+    background-color: rgba($color: white, $alpha: 0.7);
+    border-radius: 20px;
+    transition: .3s;
+    &.hide {
+        height: 0;
+    }
+    div.t {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        display: flex;
+        div.tl {
+            width: 3.5vw;
+            border-right: 0.5vw dashed gray;
+            position: relative;
+            span {
+                display: inline-block;
+                text-align: right;
+                width: 2.7vw;
+                margin-right: 0.3vw;
+            }
+        }
+        div.mt {
+            width: 16vw;
+            h3 {
+                margin: 0;
+                margin-left: 0.3vw;
+                font-weight: normal;
+            }
+            p {
+                margin: 0;
+                margin-left: 0.3vw;
+                span {
+                    display: inline-block;
+                    margin: 0.2vw;
+                    padding: 0.1vw;
+                    border: 1px solid gray;
+                }
+            }
+        }
+    }
 }
 
 body div.flex {
@@ -41,7 +88,7 @@ div.di_res {
             &.t {
                 background-image: url(./../assets/icons/train.svg);
             }
-            &.t {
+            &.c {
                 background-image: url(./../assets/icons/car.svg);
             }
         }
@@ -64,7 +111,7 @@ div.di_res {
 }
 
 div#marumasa_donation {
-    background-color: white;
+    background-color: rgba($color: white, $alpha: 0.7);
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -72,5 +119,21 @@ div#marumasa_donation {
     p {
         margin: 0;
         padding: 12px;
+    }
+}
+
+section#information {
+    img {
+        width: 100%;
+        height: auto;
+    }
+    h1 {
+        margin: 15px;
+        margin-bottom: 0;
+        font-size: 2rem;
+        font-weight: normal;
+    }
+    p {
+        margin: 15px;
     }
 }
