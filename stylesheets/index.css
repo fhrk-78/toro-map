@@ -73,4 +73,18 @@ div#marumasa_donation {
 div#marumasa_donation p {
   margin: 0;
   padding: 12px;
+}
+
+section#information img {
+  width: 100%;
+  height: auto;
+}
+section#information h1 {
+  margin: 15px;
+  margin-bottom: 0;
+  font-size: 2rem;
+  font-weight: normal;
+}
+section#information p {
+  margin: 15px;
 }/*# sourceMappingURL=index.css.map */

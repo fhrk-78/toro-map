@@ -1,48 +1,20 @@
-import { pin, line, LOG, ERROR, canvas, ctx } from "./common";
+import { pin, line, LOG, ERROR, canvas, ctx, PIN_COLOR } from "./common";
 import { pins, lines } from "./Config"
-import { CanvasHandler } from "./CanvasHandler"
-
-// 経路計算ユーティリティ
-class Directions {
-    //
-}
-
-// 経路結果コントロール
-class DirectionsResult {
-    static clear() {
-        directionresults.innerHTML = "";
-    }
-
-    static add(html: string) {
-        directionresults.insertAdjacentHTML('afterbegin', html);
-    }
-}
-
-// テンプレート化されたHTMLの生成ユーティリティ
-class HTMLBuilder {
-    static directionResultCard(icon: "train" | "car", hour: number | null = null, min: number, distance: number, about: string, returnmethodname: string, returnmethodparam: string = "") {
-        let i;
-        switch (icon) {
-            case "train":
-                i = "t";
-                break;
-            case "car":
-                i = "c";
-                break;
-        }
-        return `<div class="di_res"><div><div class="i ${i}"></div><div><h3>${hour == null ? "" : `${hour}時間`}${String(min)}分 / ${distance}m</h3><p>${about}</p></div></div><div><a href="javascript:${returnmethodname}(${returnmethodparam});" class="s text">開始</a></div></div>`;
-    }
-}
+import { CanvasHandler } from "./render/CanvasHandler"
+import { Directions } from "./directions/Directions"; 
+import { DirectionsResult } from "./directions/Result"
+import { HTMLBuilder } from "./utils/HTMLBuilder";
+import { InfoHandler } from "./info/InfoHandler"
 
 let pinlist = document.getElementById('pointList') as HTMLDataListElement;
-let directionresults = document.getElementById('directionresults') as HTMLDivElement;
 let frompoint = document.getElementById('fromPoint') as HTMLInputElement;
 let topoint = document.getElementById('toPoint') as HTMLInputElement;
-
 let main = document.getElementById('main') as HTMLElement;
-
 let directionTab = document.getElementById('directions')!;
 let informationTab = document.getElementById('information')!;
+
+let focus: pin;
+let prev_focus: pin;
 
 function resize() {
     LOG('Window Resized');
@@ -54,11 +26,19 @@ function resize() {
 }
 
 function init() {
-    resize();
-
-    pins.forEach((v: pin, i: number, a: pin[]) => {
+    pins.forEach((v: pin) => {
         pinlist.insertAdjacentHTML('afterbegin', `<option value="${v.name}" id="pin_${v.pid}"></option>`);
+        CanvasHandler.addClickEvent(v.x, v.y, 10, () => {
+            if (focus != undefined) {
+                prev_focus = focus;
+            }
+            focus = v;
+            InfoHandler.set(v);
+        }, v.pid);
+        CanvasHandler.addPinFlag(v.x, v.y, PIN_COLOR("station"))
     });
+
+    resize();
 
     window.onresize = resize;
 
@@ -66,6 +46,10 @@ function init() {
     canvas.addEventListener('mousemove', CanvasHandler.dragupdate);
     canvas.addEventListener('mouseup', CanvasHandler.dragend);
     canvas.addEventListener('wheel', CanvasHandler.wheelzoom);
+
+    canvas.addEventListener(`contextmenu`, (e: MouseEvent) => {
+        return;
+    }, false);
 }
 
 init();

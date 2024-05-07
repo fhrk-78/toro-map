@@ -5,7 +5,11 @@ module.exports = {
     './src/common.ts',
     './src/Config.ts',
     './src/index.ts',
-    './src/CanvasHandler.ts',
+    './src/directions/Directions.ts',
+    './src/directions/Result.ts',
+    './src/info/InfoHandler.ts',
+    './src/render/CanvasHandler.ts',
+    './src/utils/HTMLBuilder.ts',
   ],
   module: {
     rules: [
@@ -13,7 +17,7 @@ module.exports = {
         test: /\.ts?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
-      },
+      }
     ],
   },
   resolve: {

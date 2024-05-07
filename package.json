@@ -1,5 +1,9 @@
 {
   "devDependencies": {
+    "css-loader": "^7.1.1",
+    "mini-css-extract-plugin": "^2.9.0",
+    "sass": "^1.76.0",
+    "sass-loader": "^14.2.1",
     "ts-loader": "^9.5.1",
     "webpack": "^5.91.0",
     "webpack-cli": "^5.1.4"
@@ -114,8 +118,14 @@
     "prod": "npx webpack --mode production"
   },
   "contributors": [
-    {"name": "pizzaharumaki", "url": "https://harupiza.net/"},
-    {"name": "marumasa", "url": "https://marumasa.dev/"}
+    {
+      "name": "pizzaharumaki",
+      "url": "https://harupiza.net/"
+    },
+    {
+      "name": "marumasa",
+      "url": "https://marumasa.dev/"
+    }
   ],
   "license": "SEE LICENSE IN LICENSE.md"
 }

@@ -1,6 +1,19 @@
+@font-face {
+  font-family: "MPlus Rounded1c";
+  src: url("./../assets/fonts/MPLUSRounded1c-Regular.ttf") format("truetype");
+}
 body {
   margin: 0;
   overflow: hidden;
+}
+
+p,
+h1,
+h3,
+a,
+input {
+  font-family: "MPlus Rounded1c", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  transform: rotateZ(0.05deg);
 }
 
 input {

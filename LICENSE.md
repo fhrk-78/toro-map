@@ -2,6 +2,10 @@
 
 Assetsフォルダ内のアイコンは [GoogleIcons](https://github.com/google/material-design-icons) で Apache2.0ライセンス の元公開されています
 
+### /assets/fonts
+
+Assetsフォルダ内のフォントは GoogleFonts で OFLライセンス の元公開されています
+
 ### /script, /stylesheet, *.html
 
 > 仮措置としてカスタムライセンスを用いています。
@@ -24,3 +28,6 @@ If the translation of the license differs from the original text, the original t
 - ソースバイナリ問わず、再頒布が可能です
 - 商用利用も可能です
 - 帰属表記は必要です
+- 商標を取得行為も禁止です
+
+常にオープンなソフトウェアに保ち続けるためにご協力をお願いします

@@ -1,5 +1,6 @@
 import { pin, line } from "./common";
 
+export const PIN_RADIUS = 10;
 export const TRAIN_SPEED = 420; // m/min
 
 //   -------------[WARN]------------
@@ -8,7 +9,7 @@ export const TRAIN_SPEED = 420; // m/min
 
 export const pins: pin[] = [
     {name:"小宮山口駅",x:544,y:-458,pid:'komiya_komiyasanguchi'},
-    {name:"小宮駅",x:517,y:-449,pid:"komiya_komiya"},
+    {name:"小宮駅",x:517,y:-449,pid:"komiya_komiya", description:"小宮市の市街地の地下に位置する主要な旅客ターミナル駅。小宮電鉄線を中心にいくつかの路線が乗り入れている。",src:"https://i.ibb.co/Wv6mTnV/komiya-sta.png"},
     {name:"小宮格闘センター前駅",x:484,y:-433,pid:"komiya_komiyafightingcenter"},
     {name:"小宮南駅",x:527,y:-430,pid:"komiya_komiyaminami"},
     {name:"小宮村駅",x:458,y:-449,pid:"komiya_komiyamura"},
