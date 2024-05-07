@@ -1,4 +1,4 @@
-import { pin, line, LOG, ERROR, canvas, ctx, PIN_COLOR } from "./common";
+import { pin, line, LOG, ERROR, canvas, ctx, PIN_COLOR, LOGHISTORY } from "./common";
 import { pins, lines } from "./Config"
 import { CanvasHandler } from "./render/CanvasHandler"
 import { directionObject, Directions } from "./directions/Directions"; 
@@ -131,3 +131,10 @@ function tabInfo() {
     directionTab.classList.add('hide');
 }
 (window as any).tabInfo = tabInfo;
+
+function getLog() {
+    location.href = URL.createObjectURL(new Blob([String(LOGHISTORY)], {
+        type: "application/octet-stream"
+    }))
+}
+(window as any).getLog = getLog;
