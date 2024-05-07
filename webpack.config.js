@@ -8,6 +8,7 @@ module.exports = {
     './src/directions/Directions.ts',
     './src/directions/Result.ts',
     './src/info/InfoHandler.ts',
+    './src/info/RouteGuideHandler.ts',
     './src/render/CanvasHandler.ts',
     './src/utils/HTMLBuilder.ts',
   ],
