@@ -2,10 +2,56 @@ nav {
   position: absolute;
   right: 20px;
   top: 20px;
-  width: 50vw;
   height: 7vh;
   background-color: rgba(255, 255, 255, 0.7);
   border-radius: 50px;
+}
+
+div#routeGuide {
+  position: absolute;
+  right: 20px;
+  top: calc(40px + 7vh);
+  width: 20vw;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  transition: 0.3s;
+}
+div#routeGuide.hide {
+  height: 0;
+}
+div#routeGuide div.t {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  display: flex;
+}
+div#routeGuide div.t div.tl {
+  width: 3.5vw;
+  border-right: 0.5vw dashed gray;
+  position: relative;
+}
+div#routeGuide div.t div.tl span {
+  display: inline-block;
+  text-align: right;
+  width: 2.7vw;
+  margin-right: 0.3vw;
+}
+div#routeGuide div.t div.mt {
+  width: 16vw;
+}
+div#routeGuide div.t div.mt h3 {
+  margin: 0;
+  margin-left: 0.3vw;
+  font-weight: normal;
+}
+div#routeGuide div.t div.mt p {
+  margin: 0;
+  margin-left: 0.3vw;
+}
+div#routeGuide div.t div.mt p span {
+  display: inline-block;
+  margin: 0.2vw;
+  padding: 0.1vw;
+  border: 1px solid gray;
 }
 
 body div.flex {
@@ -44,7 +90,7 @@ div.di_res div div.i {
 div.di_res div div.i.t {
   background-image: url(./../assets/icons/train.svg);
 }
-div.di_res div div.i.t {
+div.di_res div div.i.c {
   background-image: url(./../assets/icons/car.svg);
 }
 div.di_res div div {
@@ -64,7 +110,7 @@ div.di_res div div p {
 }
 
 div#marumasa_donation {
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.7);
   position: fixed;
   bottom: 20px;
   right: 20px;

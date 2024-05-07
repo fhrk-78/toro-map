@@ -1,10 +1,11 @@
 import { pin, line, LOG, ERROR, canvas, ctx, PIN_COLOR } from "./common";
 import { pins, lines } from "./Config"
 import { CanvasHandler } from "./render/CanvasHandler"
-import { Directions } from "./directions/Directions"; 
+import { directionObject, Directions } from "./directions/Directions"; 
 import { DirectionsResult } from "./directions/Result"
 import { HTMLBuilder } from "./utils/HTMLBuilder";
 import { InfoHandler } from "./info/InfoHandler"
+import { RouteGuideHandler } from "./info/RouteGuideHandler";
 
 let pinlist = document.getElementById('pointList') as HTMLDataListElement;
 let frompoint = document.getElementById('fromPoint') as HTMLInputElement;
@@ -15,6 +16,8 @@ let informationTab = document.getElementById('information')!;
 
 let focus: pin;
 let prev_focus: pin;
+
+let direction: directionObject[];
 
 function resize() {
     LOG('Window Resized');
@@ -68,34 +71,49 @@ function reverseft() {
 
 function outputresult() {
     if (frompoint.value == "" || topoint.value == "") {return;}
-    let f: string, t: string;
+    let f: pin | undefined = undefined, t: pin | undefined = undefined;
     for(let i = 0; i < pins.length; i++) {
         if(pins[i].name === frompoint.value) {
-            f = pins[i].pid;
+            f = pins[i];
             break;
         }
     }
     for(let i = 0; i < pins.length; i++) {
         if(pins[i].name === topoint.value) {
-            t = pins[i].pid;
+            t = pins[i];
             break;
         }
     }
-    /*let result = Directions.get(f!, t!);
-    LOG(result);
-    let realdistance = result.distances[t!] * 10;
-    let min = realdistance / TRAIN_SPEED % 60;
-    let hour: number | null = (realdistance / TRAIN_SPEED - min) / 60;
-    if (hour == 0) {hour = null}
-    DirectionsResult.add(HTMLBuilder.directionResultCard("train", hour, min, realdistance, "", "startNavi", ``));
-    LOG(HTMLBuilder.directionResultCard("train", hour, min, realdistance, "", "startNavi", ``));*/
+    if (f != undefined && t != undefined) {
+        let res;
+        DirectionsResult.clear();
+        direction = [];
+        res = Directions.get(f, t, "train");
+        direction.push(res);
+        let tmp_s = "";
+        for (let e of res.direction) {
+            tmp_s += e.line.name + "、";
+        }
+        DirectionsResult.add(HTMLBuilder.directionResultCard("train", res.min, res.distance, tmp_s, "startNavi", "0"));
+    }
 }
 (window as any).outputresult = outputresult;
 
-function startNavi() {
-    //
+function startNavi(i: number) {
+    RouteGuideHandler.clear();
+    let r = direction[i];
+    if (r == undefined) {
+        return;
+    }
+    RouteGuideHandler.add(r);
+    RouteGuideHandler.show();
 }
 (window as any).startNavi = startNavi;
+
+function closeNavi() {
+    RouteGuideHandler.clear();
+}
+(window as any).closeNavi = closeNavi;
 
 function dismiss_donate() {
     document.getElementById('marumasa_donation')?.remove();

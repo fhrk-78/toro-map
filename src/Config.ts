@@ -1,6 +1,6 @@
 import { pin, line } from "./common";
 
-export const PIN_RADIUS = 10;
+export const PIN_RADIUS = 7;
 export const TRAIN_SPEED = 420; // m/min
 
 //   -------------[WARN]------------
@@ -24,7 +24,7 @@ export const pins: pin[] = [
 // * lidは[会社名_路線名]の形を使用する
 
 export const lines: line[] = [
-    {name:"小宮電鉄線(テストデータ1)",color:"orange",pid:["komiya_komiyafightingcenter","komiya_komiya","komiya_komiyasanguchi","komiya_kitakomiya"],lid:"komiya_1", type:"train"},
-    {name:"小宮電鉄線(テストデータ2)",color:"orange",pid:["komiya_komiyaminami","komiya_komiya","komiya_komiyamura","akabane_akabane","tmura_tmura"],lid:"komiya_2", type:"train"},
-    {name:"RR秘境線(テストデータ)",color:"yellow",pid:["komiya_komiyaminami","komiya_komiyasanguchi","komiya_kitahira"],lid:"komiya_2", type:"train"},
+    {name:"小宮電鉄東北線",color:"orange",pid:["komiya_komiyafightingcenter","komiya_komiya","komiya_komiyasanguchi","komiya_kitakomiya"],lid:"komiya_1", type:"train"},
+    {name:"小宮電鉄線",color:"red",pid:["komiya_komiyaminami","komiya_komiya","komiya_komiyamura","akabane_akabane","tmura_tmura"],lid:"komiya_2", type:"train"},
+    {name:"RR秘境線",color:"yellow",pid:["komiya_komiyaminami","komiya_komiyasanguchi","komiya_kitahira"],lid:"komiya_2", type:"train"},
 ]

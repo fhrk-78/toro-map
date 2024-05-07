@@ -12,19 +12,7 @@ export interface line {
     color: string,
     pid: string[],
     lid: string,
-    type: "train" | "car",
-}
-
-export interface courceObject {
-    lid: string,
-    fpid: string,
-    tpid: string,
-    distance: number,
-}
-
-export interface route {
-    distance: number,
-    cource: courceObject[],
+    type: "train" | "road" | "expwy",
 }
 
 export let LOGHISTORY: Array<any> = [];

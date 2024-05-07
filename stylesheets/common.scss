@@ -6,12 +6,15 @@
 body {
     margin: 0;
     overflow: hidden;
+    width: 100vw;
+    height: 100vh;
 }
 
 p,
 h1,
 h3,
 a,
+span,
 input {
     font-family: 'MPlus Rounded1c', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     transform:rotateZ(0.05deg);
