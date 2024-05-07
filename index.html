@@ -8,17 +8,35 @@
     <link rel="stylesheet" href="./stylesheets/index.css" />
 </head>
 <body>
-    <nav></nav>
+    <nav>
+        <!---->
+    </nav>
+
+    <div id="routeGuide" class="hide">
+        <!-- Add by Script -->
+    </div>
+
     <div class="flex">
         <aside>
-            <section id="directions">
+            <div class="tabrail">
+                <a onclick="tabInfo()" class="s tab"><div class="s i info"></div>場所</a>
+                <a onclick="tabDir()" class="s tab"><div class="s i dir"></div>ルート</a>
+            </div>
+
+            <section id="information">
+                <img id="info_image" src="https://i.ibb.co/CP4Sjbn/2024-04-15-04-19-59.png" />
+                <h1 id="info_title">ようこそ</h1>
+                <p id="info_description">このアプリは、TORO乗換案内アプリをベースにビジュアルや機能を一新したTOROの交通をまとめたアプリです。水色の丸をクリックするとここにピンの場所の情報を表示できます。</p>
+            </section>
+
+            <section id="directions" class="hide">
                 <datalist id="pointList">
                     <!-- Add by script -->
                 </datalist>
-                <input type="search" name="fromPoint" id="fromPoint" list="pointList" class="s" placeholder="出発地" /><a href="javascript:reverseft();" class="s icon sync"></a>
-                <input type="search" name="toPoint" id="toPoint" list="pointList" class="s" placeholder="目的地" /><!--<a href="javascript:" class="s icon add_location"></a>-->
+                <input type="search" name="fromPoint" id="fromPoint" list="pointList" class="s" placeholder="出発地" /><a onclick="reverseft()" class="s icon sync"></a>
+                <input type="search" name="toPoint" id="toPoint" list="pointList" class="s" placeholder="目的地" /><!--<a class="s icon add_location"></a>-->
                 <div class="space10px"></div>
-                <a href="javascript:outputresult();" class="s text" style="margin-left: 8vw;">この条件で計算</a>
+                <a onclick="outputresult()" class="s text" style="margin-left: 8vw;">この条件で計算</a>
                 <div class="space10px"></div>
                 <div id="directionresults">
                     <!-- Add by script -->
@@ -35,9 +53,9 @@
             Minecraft向けのModやプラグインを全て無料でオープンソースとして公開してきました。<br/>
             <span style="color: green;">もしよければ寄付をお願いします。</span> ( Amazonギフトカード 又は Paypay が使えます )</p>
         <a href="https://donate.marumasa.dev/" class="s text" target="_blank" rel="noopener noreferrer" style="border-color: green; color: green;">寄付ページへ</a>
-        <a href="javascript:dismiss_donate();" class="s text" style="margin-left: 0;">無視</a>
+        <a onclick="dismiss_donate()" class="s text" style="margin-left: 0;">無視</a>
     </div>
 
-    <script src="./script/index.js"></script>
+    <script src="./script/main.js"></script>
 </body>
 </html>

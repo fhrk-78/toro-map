@@ -1,6 +1,22 @@
+@font-face {
+  font-family: "MPlus Rounded1c";
+  src: url("./../assets/fonts/MPLUSRounded1c-Regular.ttf") format("truetype");
+}
 body {
   margin: 0;
   overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+p,
+h1,
+h3,
+a,
+span,
+input {
+  font-family: "MPlus Rounded1c", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  transform: rotateZ(0.05deg);
 }
 
 input {
@@ -35,6 +51,9 @@ input[type=search].s::-webkit-search-cancel-button {
   display: none;
 }
 
+a.s {
+  position: relative;
+}
 a.s.icon {
   position: absolute;
   display: inline-block;
@@ -76,7 +95,48 @@ a.s.text:hover {
 a.s.text:active {
   transform: scale(0.95);
 }
+a.s.tab {
+  border-bottom: 3px solid gray;
+  display: inline-block;
+  padding: 7px 15px;
+  text-decoration: none;
+  color: black;
+  transition: 0.3s;
+  font-size: 1.25rem;
+  padding-left: 50px;
+}
+a.s.tab:hover {
+  background-color: rgb(230, 230, 230);
+}
+a.s.tab:active {
+  transform: scale(0.95);
+}
+
+div.s.i {
+  left: 15px;
+  width: 30px;
+  height: 30px;
+  background-repeat: no-repeat;
+  background-size: 30px;
+  background-position: center;
+  display: inline-block;
+  position: absolute;
+}
+div.s.i.dir {
+  background-image: url(./../assets/icons/directions.svg);
+}
+div.s.i.info {
+  background-image: url(./../assets/icons/info.svg);
+}
 
 div.space10px {
   height: 10px;
+}
+
+div.tabrail {
+  margin: 10px;
+}
+
+section.hide {
+  display: none;
 }/*# sourceMappingURL=common.css.map */
