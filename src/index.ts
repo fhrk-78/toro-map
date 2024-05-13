@@ -1,11 +1,12 @@
 import { pin, line, LOG, ERROR, canvas, ctx, PIN_COLOR, LOGHISTORY } from "./common";
-import { pins, lines } from "./Config"
+import { pins, lines, setpins, setlines } from "./Config"
 import { CanvasHandler } from "./render/CanvasHandler"
 import { directionObject, Directions } from "./directions/Directions"; 
 import { DirectionsResult } from "./directions/Result"
 import { HTMLBuilder } from "./utils/HTMLBuilder";
 import { InfoHandler } from "./info/InfoHandler"
 import { RouteGuideHandler } from "./info/RouteGuideHandler";
+import { getline, getpin } from "./network/Database";
 
 let pinlist = document.getElementById('pointList') as HTMLDataListElement;
 let frompoint = document.getElementById('fromPoint') as HTMLInputElement;
@@ -18,6 +19,16 @@ let focus: pin;
 let prev_focus: pin;
 
 let direction: directionObject[];
+
+getpin().then((p) => {
+    LOG(p);
+    setpins(p);
+    getline().then((l) => {
+        LOG(l);
+        setlines(l);
+        init();
+    })
+})
 
 function resize() {
     LOG('Window Resized');
@@ -34,6 +45,7 @@ function init() {
         CanvasHandler.addClickEvent(v.x, v.y, 10, () => {
             if (focus != undefined) {
                 prev_focus = focus;
+                tabInfo();
             }
             focus = v;
             InfoHandler.set(v);
@@ -54,8 +66,6 @@ function init() {
         return;
     }, false);
 }
-
-init();
 
 /*************
  * HTML Call *

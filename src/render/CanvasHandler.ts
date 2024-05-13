@@ -70,7 +70,6 @@ export class CanvasHandler {
         ctx.beginPath();
         ctx.arc(CanvasHandler.cx(x), CanvasHandler.cy(y), radius, DIG_ARC(0), DIG_ARC(360), false);
         ctx.fill();
-        LOG(CanvasHandler.cx(x), CanvasHandler.cy(y), radius, DIG_ARC(0), DIG_ARC(360), false);
     }
 
     static dragstart(e: MouseEvent) {
@@ -103,9 +102,29 @@ export class CanvasHandler {
     static wheelzoom(e: WheelEvent) {
         LOG("Update WheelZoom");
 
+        e.preventDefault();
+
+        // ローカルサイズ更新
         let scale = e.deltaY * -0.002;
+        let oldScale = CanvasHandler.local_size;
         CanvasHandler.local_size += scale;
 
+        // 中心位置
+        let x = CanvasHandler.OFFSET_X;
+        let y = CanvasHandler.OFFSET_Y;
+
+        // Canvasの移動分ずらす
+        CanvasHandler.local_x = (CanvasHandler.local_x - x / oldScale) * (oldScale / CanvasHandler.local_size) + x / CanvasHandler.local_size;
+        CanvasHandler.local_y = (CanvasHandler.local_y - y / oldScale) * (oldScale / CanvasHandler.local_size) + y / CanvasHandler.local_size;
+    
+        while(true) {
+            LOG("L",
+            CanvasHandler.local_x,
+            CanvasHandler.local_y,
+            );
+        }
+
+        // 現在の状態で更新Cannvas
         CanvasHandler.render();
     }
 

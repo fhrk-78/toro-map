@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TORO交通情報ネットワークマップ</title>
+    <meta name="description" content="ビジュアルや機能を一新したTOROの交通をまとめたアプリ" />
     <link rel="stylesheet" href="./stylesheets/common.css" />
     <link rel="stylesheet" href="./stylesheets/index.css" />
+    <link rel="manifest" href="/manifest.json">
 </head>
 <body>
     <nav>
@@ -57,5 +59,18 @@
     </div>
 
     <script src="./script/main.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('./sw.js').then(registration => {
+            console.log('sw regist succeful');
+            registration.onupdatefound = function() {
+                console.log('update found');
+                registration.update();
+            }
+          }).catch(err => {
+            console.log('sw regist failed');
+          });
+        }
+      </script>
 </body>
 </html>
