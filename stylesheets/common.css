@@ -51,6 +51,42 @@ input[type=search].s::-webkit-search-cancel-button {
   display: none;
 }
 
+input[type=text].s,
+input[type=number].s,
+input[type=url].s {
+  border: 1px solid gray;
+  border-radius: 10px;
+  margin: 10px 0 0 10px;
+  padding: 5px;
+  transition: 0.3s;
+  height: 30px;
+}
+input[type=text].s:focus,
+input[type=number].s:focus,
+input[type=url].s:focus {
+  background-color: rgb(230, 230, 230);
+}
+input[type=text].s:active,
+input[type=number].s:active,
+input[type=url].s:active {
+  transform: scale(0.95);
+}
+input[type=text].s::-moz-placeholder, input[type=number].s::-moz-placeholder, input[type=url].s::-moz-placeholder {
+  font-size: 1.2rem;
+  transform: translateY(-0.5vh);
+}
+input[type=text].s::placeholder,
+input[type=number].s::placeholder,
+input[type=url].s::placeholder {
+  font-size: 1.2rem;
+  transform: translateY(-0.5vh);
+}
+input[type=text].s::-webkit-search-cancel-button,
+input[type=number].s::-webkit-search-cancel-button,
+input[type=url].s::-webkit-search-cancel-button {
+  display: none;
+}
+
 a.s {
   position: relative;
 }
@@ -139,4 +175,14 @@ div.tabrail {
 
 section.hide {
   display: none;
+}
+
+div.form div {
+  margin: 10px;
+  display: block;
+}
+div.form div input,
+div.form div label {
+  font-size: 1.2rem;
+  margin-left: 10px;
 }/*# sourceMappingURL=common.css.map */

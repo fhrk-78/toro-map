@@ -1,12 +1,14 @@
 import { pin, line, LOG, ERROR, canvas, ctx, PIN_COLOR, LOGHISTORY } from "./common";
-import { pins, lines, setpins, setlines } from "./Config"
-import { CanvasHandler } from "./render/CanvasHandler"
+import { pins, lines, setpins, setlines, focus, prev_focus, setPrevFocus, setFocus, edit_mode } from "./Config"
+import { CanvasHandler } from "./render/CanvasMain"
 import { directionObject, Directions } from "./directions/Directions"; 
 import { DirectionsResult } from "./directions/Result"
 import { HTMLBuilder } from "./utils/HTMLBuilder";
 import { InfoHandler } from "./info/InfoHandler"
 import { RouteGuideHandler } from "./info/RouteGuideHandler";
-import { getline, getpin } from "./network/Database";
+import { get, getline, getpin } from "./network/Database";
+import { formControler } from "./info/FormControler";
+import { lineEditorEngine } from "./editor/LineEditorEngine";
 
 let pinlist = document.getElementById('pointList') as HTMLDataListElement;
 let frompoint = document.getElementById('fromPoint') as HTMLInputElement;
@@ -15,19 +17,14 @@ let main = document.getElementById('main') as HTMLElement;
 let directionTab = document.getElementById('directions')!;
 let informationTab = document.getElementById('information')!;
 
-let focus: pin;
-let prev_focus: pin;
-
 let direction: directionObject[];
 
-getpin().then((p) => {
-    LOG(p);
-    setpins(p);
-    getline().then((l) => {
-        LOG(l);
-        setlines(l);
-        init();
-    })
+get().then((res) => {
+    LOG(res);
+    setpins(getpin(res));
+    setlines(getline(res));
+    init();
+    document.getElementById('splash')?.classList.add('hide');
 })
 
 function resize() {
@@ -43,11 +40,19 @@ function init() {
     pins.forEach((v: pin) => {
         pinlist.insertAdjacentHTML('afterbegin', `<option value="${v.name}" id="pin_${v.pid}"></option>`);
         CanvasHandler.addClickEvent(v.x, v.y, 10, () => {
+            tabInfo();
             if (focus != undefined) {
-                prev_focus = focus;
-                tabInfo();
+                setPrevFocus(focus);
+                if (edit_mode == true) {
+                    CanvasHandler.addLineFlag([prev_focus!.x, v.x], [prev_focus!.y, v.y], "#000000");
+                    LOG(prev_focus, focus);
+                    CanvasHandler.render();
+                }
             }
-            focus = v;
+            if (edit_mode == true) {
+                lineEditorEngine.pla(v.pid);
+            }
+            setFocus(v);
             InfoHandler.set(v);
         }, v.pid);
         CanvasHandler.addPinFlag(v.x, v.y, PIN_COLOR("station"))
@@ -141,6 +146,21 @@ function tabInfo() {
     directionTab.classList.add('hide');
 }
 (window as any).tabInfo = tabInfo;
+
+(window as any).cancelAddForm = formControler.cancel;
+(window as any).showAddForm = formControler.show;
+(window as any).sendPin = formControler.sendPin;
+
+(window as any).lineEditStart = lineEditorEngine.editStart;
+(window as any).lineEditCancel = lineEditorEngine.editCancel;
+
+(window as any).lineRegistForm = lineEditorEngine.show;
+(window as any).lineRegistCancel = lineEditorEngine.cancel;
+(window as any).lineRegistSend = lineEditorEngine.sendLine;
+
+////////////////
+/// DevTools ///
+////////////////
 
 function getLog() {
     location.href = URL.createObjectURL(new Blob([String(LOGHISTORY)], {
