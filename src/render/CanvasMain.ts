@@ -15,7 +15,7 @@ export class CanvasHandler {
 
     static clickFlag: Array<[number,number,number,number,(x: number, y: number, radius: number) => void]> = [];
     static pinRenderFlag: Array<{x:number, y:number, r:number, c:string}> = [];
-    static lineRenderFlag: Array<{x:number[], y:number[], c:string}> = [];
+    static lineCustomRenderFlag: Array<{x:number[], y:number[], c:string}> = [];
 
     static cx = (ax: number) => (CanvasHandler.OFFSET_X+CanvasHandler.local_x+ax)*(CanvasHandler.local_size);
     static cy = (ay: number) => (CanvasHandler.OFFSET_Y+CanvasHandler.local_y+ay)*(CanvasHandler.local_size);
@@ -42,6 +42,10 @@ export class CanvasHandler {
             for (let e of CanvasHandler.pinRenderFlag) {
                 CanvasHandler.pinRender(e.x, e.y, e.r, e.c);
             }
+        }
+        // CustomLine
+        for (const e of CanvasHandler.lineCustomRenderFlag) {
+            CanvasHandler.lineRender(e.x, e.y, e.c);
         }
     }
 
@@ -70,7 +74,6 @@ export class CanvasHandler {
         ctx.beginPath();
         ctx.arc(CanvasHandler.cx(x), CanvasHandler.cy(y), radius, DIG_ARC(0), DIG_ARC(360), false);
         ctx.fill();
-        LOG(CanvasHandler.cx(x), CanvasHandler.cy(y), radius, DIG_ARC(0), DIG_ARC(360), false);
     }
 
     static dragstart(e: MouseEvent) {
@@ -103,9 +106,27 @@ export class CanvasHandler {
     static wheelzoom(e: WheelEvent) {
         LOG("Update WheelZoom");
 
+        e.preventDefault();
+
+        // ローカルサイズ更新
         let scale = e.deltaY * -0.002;
+        let oldScale = CanvasHandler.local_size;
         CanvasHandler.local_size += scale;
 
+        // 中心位置
+        let x = CanvasHandler.OFFSET_X;
+        let y = CanvasHandler.OFFSET_Y;
+
+        // Canvasの移動分ずらす
+        CanvasHandler.local_x = (CanvasHandler.local_x - x / oldScale) * (oldScale / CanvasHandler.local_size) + x / CanvasHandler.local_size;
+        CanvasHandler.local_y = (CanvasHandler.local_y - y / oldScale) * (oldScale / CanvasHandler.local_size) + y / CanvasHandler.local_size;
+    
+        LOG("L",
+            CanvasHandler.local_x,
+            CanvasHandler.local_y,
+        );
+
+        // 現在の状態で更新Cannvas
         CanvasHandler.render();
     }
 
@@ -126,6 +147,8 @@ export class CanvasHandler {
         })
     };
     static addPinFlag = (x: number, y: number, c: string) => CanvasHandler.pinRenderFlag.push({x:x, y:y, r:PIN_RADIUS, c:c});
+    static addLineFlag = (x:number[], y:number[], c:string) => CanvasHandler.lineCustomRenderFlag.push({x:x,y:y,c:c});
+    static resetLineFlag = ()=>CanvasHandler.lineCustomRenderFlag=[];
 
     static strokeStyle = (color: string) => ctx.strokeStyle = color;
     static strokeWidth = (width: number) => ctx.lineWidth = width;

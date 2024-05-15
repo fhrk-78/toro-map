@@ -1,16 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: [
-    './src/common.ts',
-    './src/Config.ts',
-    './src/index.ts',
-    './src/directions/Directions.ts',
-    './src/directions/Result.ts',
-    './src/info/InfoHandler.ts',
-    './src/render/CanvasHandler.ts',
-    './src/utils/HTMLBuilder.ts',
-  ],
+  entry: './src/index.ts',
   module: {
     rules: [
       {
