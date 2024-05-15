@@ -48,6 +48,30 @@ input[type=search].s {
     }
 }
 
+input[type=text].s,
+input[type=number].s,
+input[type=url].s {
+    border: 1px solid gray;
+    border-radius: 10px;
+    margin: 10px 0 0 10px;
+    padding: 5px;
+    transition: .3s;
+    height: 30px;
+    &:focus {
+        background-color: rgb(230, 230, 230);
+    }
+    &:active {
+        transform: scale(0.95);
+    }
+    &::placeholder {
+        font-size: 1.2rem;
+        transform:translateY(-0.5vh)
+    }
+    &::-webkit-search-cancel-button {
+        display: none;
+    }
+}
+
 a.s {
     &.icon {
         position: absolute;
@@ -137,4 +161,19 @@ div.tabrail {
 
 section.hide {
     display: none;
+}
+
+div.form {
+    //display: table;
+    div {
+        margin: 10px;
+        //display: table-row;
+        display: block;
+        input,
+        label {
+            //display: table-cell;
+            font-size: 1.2rem;
+            margin-left: 10px;
+        }
+    }
 }

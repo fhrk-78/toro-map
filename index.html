@@ -7,15 +7,23 @@
     <meta name="description" content="ビジュアルや機能を一新したTOROの交通をまとめたアプリ" />
     <link rel="stylesheet" href="./stylesheets/common.css" />
     <link rel="stylesheet" href="./stylesheets/index.css" />
-    <link rel="manifest" href="/manifest.json">
+    <!--<link rel="manifest" href="/manifest.json">-->
+    <link rel="icon" type="image/png" href="./assets/favicons/icon_512.png" />
 </head>
 <body>
     <nav>
-        <!---->
+        <a href="javascript:lineEditStart();" class="add"></a>
+        <a href="javascript:showAddForm();" class="add_location"></a>
     </nav>
 
     <div id="routeGuide" class="hide">
         <!-- Add by Script -->
+    </div>
+
+    <div id="edit_mode_nav" class="hide">
+        <span>編集モードです。水色の点をクリックすると地点を追加できます。</span>
+        <a class="s text" href="javascript:lineEditCancel();">キャンセル</a>
+        <a class="s text" href="javascript:lineRegistForm();">このパスで登録</a>
     </div>
 
     <div class="flex">
@@ -28,7 +36,38 @@
             <section id="information">
                 <img id="info_image" src="https://i.ibb.co/CP4Sjbn/2024-04-15-04-19-59.png" />
                 <h1 id="info_title">ようこそ</h1>
-                <p id="info_description">このアプリは、TORO乗換案内アプリをベースにビジュアルや機能を一新したTOROの交通をまとめたアプリです。水色の丸をクリックするとここにピンの場所の情報を表示できます。</p>
+                <p id="info_description">地図上に表示されている水色の丸をクリックするとここに地点の場所の情報を表示できます。</p>
+                <div id="info_tutor_guide">
+                    <a href="javascript:showAddForm();">
+                        <span>地点の追加</span>
+                        <p class="g">新しい路線の経由地を追加できます
+                            <br/>(アカウント不要)
+                        </p>
+                    </a>
+                    <a href="javascript:lineEditStart();">
+                        <span>路線を追加</span>
+                        <p class="g">指定した経路で新しい路線を追加できます
+                            <br/>(アカウント不要)
+                        </p>
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1DuYRFwj6l4waIsWJG7NY2ee0hmUzxBkIQH1w4GI49G4/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
+                        <span>データを編集</span>
+                        <p>簡単に編集できます
+                            <br/>(Googleアカウントが必要です)</p>
+                    </a>
+                    <a href="https://github.com/TORO-Server/toro-map/issues/new" target="_blank" rel="noopener noreferrer">
+                        <span>バグを報告</span>
+                        <p>(Githubアカウントが必要です)</p>
+                    </a>
+                    <a href="https://github.com/TORO-Server/toro-map/issues/new" target="_blank" rel="noopener noreferrer">
+                        <span>新機能のアイデア</span>
+                        <p>(Githubアカウントが必要です)</p>
+                    </a>
+                    <a href="http://torosaba.net:60016/" target="_blank" rel="noopener noreferrer">
+                        <span>Dynmapを開く</span>
+                        <p style="color: blue;">(地形などはこちら)</p>
+                    </a>
+                </div>
             </section>
 
             <section id="directions" class="hide">
@@ -51,16 +90,78 @@
     </div>
 
     <div id="marumasa_donation">
-        <p>このアプリの開発にあたって多大な協力者となったMarumasaさんは、<br/>
+        <p>主にTOROで使われるいくつかのModやプラグインを開発しているMarumasaさんは、<br/>
             Minecraft向けのModやプラグインを全て無料でオープンソースとして公開してきました。<br/>
             <span style="color: green;">もしよければ寄付をお願いします。</span> ( Amazonギフトカード 又は Paypay が使えます )</p>
         <a href="https://donate.marumasa.dev/" class="s text" target="_blank" rel="noopener noreferrer" style="border-color: green; color: green;">寄付ページへ</a>
         <a onclick="dismiss_donate()" class="s text" style="margin-left: 0;">無視</a>
     </div>
 
+    <div id="addnewf" class="hide">
+        <div class="form" id="pin_addform">
+            <div>
+                <label>名前: </label><input type="text" name="name_addp" id="name_addp" class="s" />
+            </div>
+            <div>
+                <label>X座標: </label><input type="number" name="x_addp" id="x_addp" class="s" required />
+                <label>Z座標: </label><input type="number" name="z_addp" id="z_addp" class="s" required />
+            </div>
+            <div>
+                <label>ID: </label><input type="text" name="id_before_addp" id="id_before_addp" placeholder="都市名(ローマ字)" class="s" />
+                <span>_</span><input type="text" name="id_after_addp" id="id_after_addp" placeholder="場所の名前(ローマ字)" class="s" />
+                <span>または</span><input type="text" name="id_custom_addp" id="id_custom_addp" placeholder="カスタムID" class="s" />
+                <p>※ カンマ(,)は使用しないでください / 重複したIDは、最初に登録されたIDが優先されます</p>
+            </div>
+            <div>
+                <label>説明: </label><input type="text" name="description_addp" id="description_addp" placeholder="(任意)" class="s" />
+            </div>
+            <div>
+                <label>サムネイル画像のURL: </label><input type="url" name="image_addp" id="image_addp" placeholder="(任意)" class="s" style="color: rgb(0, 183, 255);" />
+            </div>
+        </div>
+        <div>
+            <a href="javascript:sendPin();" class="s text" style="border-color: blue; color: blue;">登録</a>
+            <a href="https://docs.google.com/spreadsheets/d/1DuYRFwj6l4waIsWJG7NY2ee0hmUzxBkIQH1w4GI49G4/edit?usp=sharing" class="s text" target="_blank" rel="noopener noreferrer" style="border-color: green; color: green;">スプレッドシートから編集する</a>
+            <a href="javascript:cancelAddForm();" class="s text">キャンセル</a>
+        </div>
+    </div>
+
+    <div id="addnewl" class="hide">
+        <div class="form" id="line_addform">
+            <div>
+                <label>名前: </label><input type="text" name="name_addl" id="name_addl" class="s" />
+            </div>
+            <div>
+                <label>路線の色: </label><input type="color" name="color_addl" id="color_addl" class="s" />
+            </div>
+            <div>
+                <label>パスのデータ(読み取り専用): </label><input type="text" name="path_addl" id="path_addl" class="s" readonly />
+            </div>
+            <div>
+                <label>ID: </label><input type="text" name="id_before_addl" id="id_before_addl" placeholder="事業者名(ローマ字)" class="s" />
+                <span>_</span><input type="text" name="id_after_addl" id="id_after_addl" placeholder="路線の名前(ローマ字)" class="s" />
+                <span>または</span><input type="text" name="id_custom_addl" id="id_custom_addl" placeholder="カスタムID" class="s" />
+                <p>※ 重複したIDは、最初に登録されたIDが優先されます</p>
+            </div>
+        </div>
+        <div>
+            <a href="javascript:lineRegistSend();" class="s text" style="border-color: blue; color: blue;">登録</a>
+            <a href="https://docs.google.com/spreadsheets/d/1DuYRFwj6l4waIsWJG7NY2ee0hmUzxBkIQH1w4GI49G4/edit?usp=sharing" class="s text" target="_blank" rel="noopener noreferrer" style="border-color: green; color: green;">スプレッドシートから編集する</a>
+            <a href="javascript:lineRegistCancel();" class="s text">キャンセル</a>
+        </div>
+    </div>
+
+    <div id="splash">
+        <span>ロード中...<b> (通信環境によっては数分かかる場合がございます)</b></span>
+    </div>
+
+    <div id="regist_load" class="hide">
+        <span>登録中...<b> (通信環境によっては数分かかる場合がございます)</b></span>
+    </div>
+
     <script src="./script/main.js"></script>
     <script>
-        if ('serviceWorker' in navigator) {
+        /*if ('serviceWorker' in navigator) {
           navigator.serviceWorker.register('./sw.js').then(registration => {
             console.log('sw regist succeful');
             registration.onupdatefound = function() {
@@ -70,7 +171,7 @@
           }).catch(err => {
             console.log('sw regist failed');
           });
-        }
+        }*/
       </script>
 </body>
 </html>
