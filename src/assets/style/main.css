@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans JP', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+}
+
+#app {
+    width: 100vw;
+    height: 100vh;
+    background-color: whitesmoke;
+}
+
+.sidebar {
+    width: 5vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden auto;
+    justify-content: space-between;
+}
+
+.sidecontentgroup {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidecontent {
+    display: flex;
+    width: 4vw;
+    height: 4vw;
+    margin: 0.5vw;
+    border-radius: 999px;
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 80%;
+    transition: 0.2s;
+}
+
+.sidecontent.focused {
+    background-color: #e0e0e0;
+}
+
+.sidecontent:hover {
+    background-color: silver;
+}
+
+.iinfo {
+    background-image: url(../logo.png);
+    background-size: 70%;
+    background-color: rgb(160, 192, 240);
+}
+
+.sidecontent.iinfo.focused {
+    background-color: rgb(98, 150, 228);
+}
+
+.sidecontent.iinfo:hover {
+    background-color: rgb(18, 102, 228);
+}
+
+.iexplore {
+    background-image: url(../icons/explore.svg);
+}
+
+.iaccount {
+    background-image: url(../icons/account.svg);
+}
+
+.isettings {
+    background-image: url(../icons/settings.svg);
+}
+
+.sidecontent.bottom {
+    align-self: flex-end;
+}
+
+.notifs {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+}
+
+.slide-fade-enter-active {
+    animation: pagemove 0.5s;
+}
+
+/*.slide-fade-leave-active {
+    animation: pagemove 0.5s reverse;
+}*/
+
+@keyframes pagemove {
+    0% {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

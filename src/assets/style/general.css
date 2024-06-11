@@ -1,0 +1,64 @@
+.btn {
+    border: solid gray 1px;
+    font-size: 1.2rem;
+    padding: 5px;
+    margin: 5px 15px;
+    margin-right: 0;
+    display: inline-flex;
+    cursor: pointer;
+}
+
+.btn:hover {
+    border: solid rgb(29, 122, 209) 1px;
+}
+
+.btn.primary {
+    border: solid rgb(26, 121, 36) 1px;
+    border-image-source: linear-gradient(90deg, rgb(39, 180, 53), rgb(29, 122, 209));
+    border-image-slice: 1;
+    background: -webkit-linear-gradient(90deg, rgb(41, 185, 56), rgb(16, 106, 190));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.btn.primary:hover {
+    border: solid gray 1px;
+    background: none;
+    -webkit-text-fill-color: black;
+}
+
+.banner {
+    display: block;
+    padding: 0 15px;
+    height: 0;
+    color: transparent;
+    overflow: hidden;
+
+    background-color: rgb(180, 236, 255);
+    color: #333;
+    padding-left: calc(5vw + 15px);
+    font-size: 1.2rem;
+    transition: 0.2s;
+}
+
+.banner.success {
+    background-color: rgb(127, 255, 170);
+    color: #333;
+}
+
+.banner.warn {
+    background-color: rgb(255, 255, 170);
+    color: #333;
+}
+
+.banner.error {
+    background-color: rgb(255, 197, 197);
+    color: #333;
+}
+
+.banner.show {
+    color: #333;
+    height: auto;
+    padding: 15px;
+    padding-left: calc(5vw + 15px);
+}

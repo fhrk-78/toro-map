@@ -1,0 +1,151 @@
+<script lang="ts" setup>
+import * as PIXI from 'pixi.js'
+import { Viewport } from 'pixi-viewport'
+import { onMounted } from 'vue'
+import { useMapdataStore } from '@/stores/mapdata'
+
+import ICIcon from '@/assets/icons/anthurum84/ic.png'
+import JCTIcon from '@/assets/icons/anthurum84/jct.png'
+import PAIcon from '@/assets/icons/anthurum84/pa.png'
+import SAIcon from '@/assets/icons/anthurum84/sa.png'
+
+onMounted(() => {
+    ;(async () => {
+        let mapdataStore = useMapdataStore()
+        const canvasmain = document.getElementById('canvasmain') as HTMLDivElement
+        const app = new PIXI.Application({
+            background: '#f1f1ea',
+            resizeTo: canvasmain
+        })
+
+        canvasmain.appendChild(app.view as any)
+
+        const viewport = new Viewport({
+            screenWidth: canvasmain.clientWidth,
+            screenHeight: canvasmain.clientHeight,
+            worldWidth: 200000,
+            worldHeight: 200000,
+
+            events: app.renderer.events
+        })
+
+        app.stage.addChild(viewport)
+
+        viewport.drag().pinch().wheel().decelerate()
+
+        viewport.position.set(app.screen.width / 2, app.screen.height / 2)
+
+        mapdataStore.localpoints = []
+        mapdataStore.localways = []
+
+        //dev
+        mapdataStore.points = []
+        mapdataStore.ways = []
+        mapdataStore.points.push({
+            displayname: 'テストポイント1',
+            id: 'testpoint1',
+            x: 100,
+            y: 0,
+            author: 'haru7p8',
+            mytype: 'ic'
+        })
+
+        mapdataStore.points.push({
+            displayname: 'テストポイント2',
+            id: 'testpoint2',
+            x: -100,
+            y: 0,
+            author: 'haru7p8',
+            mytype: 'jct'
+        })
+
+        mapdataStore.points.push({
+            id: 'testpoint3',
+            x: -200,
+            y: 100,
+            author: 'haru7p8',
+            mytype: '_blank'
+        })
+
+        mapdataStore.points.push({
+            displayname: 'テストポイント4',
+            id: 'testpoint4',
+            x: -500,
+            y: 150,
+            author: 'haru7p8',
+            mytype: 'pa'
+        })
+
+        mapdataStore.ways.push({
+            displayname: 'テストウェイ1',
+            id: 'testway1',
+            paths: mapdataStore.points,
+            author: 'haru7p8',
+            mytype: 'expwy'
+        })
+
+        for (const e of mapdataStore.ways) {
+            if (e.paths.length < 2) continue
+            let waycolor
+            switch (e.mytype) {
+                case 'expwy':
+                    waycolor = 0x248a0e
+                    break
+
+                default:
+                    waycolor = 0x000
+                    break
+            }
+            const i = mapdataStore.localways.push(new PIXI.Graphics()) - 1
+            mapdataStore.localways[i].lineStyle({
+                width: 10,
+                color: waycolor
+            })
+            mapdataStore.localways[i].moveTo(e.paths[0].x, e.paths[0].y)
+            for (let j = 1; j < e.paths.length; j++) {
+                const elm = e.paths[j]
+                mapdataStore.localways[i].lineTo(elm.x, elm.y)
+            }
+            viewport.addChild(mapdataStore.localways[i] as PIXI.Graphics)
+        }
+
+        for (const e of mapdataStore.points) {
+            let pointtexture
+            switch (e.mytype) {
+                case '_blank':
+                    pointtexture = PIXI.Texture.EMPTY
+                    break
+
+                case 'ic':
+                    pointtexture = PIXI.Texture.from(ICIcon)
+                    break
+                case 'jct':
+                    pointtexture = PIXI.Texture.from(JCTIcon)
+                    break
+                case 'pa':
+                    pointtexture = PIXI.Texture.from(PAIcon)
+                    break
+                case 'sa':
+                    pointtexture = PIXI.Texture.from(SAIcon)
+                    break
+
+                default:
+                    pointtexture = PIXI.Texture.EMPTY
+                    break
+            }
+            const i = mapdataStore.localpoints.push(viewport.addChild(new PIXI.Sprite(pointtexture))) - 1
+            mapdataStore.localpoints[i].width = mapdataStore.localpoints[i].height = 30
+            mapdataStore.localpoints[i].position.set(e.x, e.y)
+            mapdataStore.localpoints[i].anchor.set(0.5)
+        }
+    })()
+})
+</script>
+
+<template>
+    <div id="canvasmain"></div>
+</template>
+
+<style scoped>
+@import url('./../assets/style/components/canvas.css');
+</style>

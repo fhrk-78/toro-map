@@ -1,11 +1,11 @@
 {
-    "compilerOptions": {
-      "module": "es2022",
-      "target": "es2022",
-      "outDir": "script",
-      "rootDir": "./src",
-      "strict": true,
-      "moduleResolution": "node",
-      "esModuleInterop": true
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.app.json"
     }
+  ]
 }
