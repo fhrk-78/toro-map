@@ -30,6 +30,7 @@
                     <li>Pinia</li>
                     <li>PIXI.js</li>
                     <li>PIXI-Viewport</li>
+                    <li>PixiJS Smooth Graphics</li>
                     <li>Google Icons</li>
                     <li>Google Fonts</li>
                 </ul>

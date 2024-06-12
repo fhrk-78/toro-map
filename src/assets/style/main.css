@@ -71,6 +71,10 @@
     background-image: url(../icons/explore.svg);
 }
 
+.igroup {
+    background-image: url(../icons/group.svg);
+}
+
 .iaccount {
     background-image: url(../icons/account.svg);
 }

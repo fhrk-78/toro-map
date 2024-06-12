@@ -3,6 +3,7 @@ import * as PIXI from 'pixi.js'
 import { Viewport } from 'pixi-viewport'
 import { onMounted } from 'vue'
 import { useMapdataStore } from '@/stores/mapdata'
+import { SmoothGraphics } from '@pixi/graphics-smooth'
 
 import ICIcon from '@/assets/icons/anthurum84/ic.png'
 import JCTIcon from '@/assets/icons/anthurum84/jct.png'
@@ -96,7 +97,7 @@ onMounted(() => {
                     waycolor = 0x000
                     break
             }
-            const i = mapdataStore.localways.push(new PIXI.Graphics()) - 1
+            const i = mapdataStore.localways.push(new SmoothGraphics()) - 1
             mapdataStore.localways[i].lineStyle({
                 width: 10,
                 color: waycolor
@@ -106,7 +107,7 @@ onMounted(() => {
                 const elm = e.paths[j]
                 mapdataStore.localways[i].lineTo(elm.x, elm.y)
             }
-            viewport.addChild(mapdataStore.localways[i] as PIXI.Graphics)
+            viewport.addChild(mapdataStore.localways[i] as SmoothGraphics)
         }
 
         for (const e of mapdataStore.points) {
