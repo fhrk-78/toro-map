@@ -1,8 +1,8 @@
 # TOROMap
 
-## セットアップ
+## Client セットアップ
 
-### Node.js/Gitをインストール
+Node.js/Gitをインストールする必要があります
 
 ### コマンドプロンプトを起動
 
@@ -10,26 +10,26 @@
 
 ```ps1
 > git clone https://github.com/TORO-Server/toro-map.git
-> cd toro-map
+> cd toro-map/client
 > npm install
 > npm run dev
 ```
 
-## 編集
+### CSS編集
 
 コマンドプロンプトを起動しながらファイルを編集
 
 `https://localhost:5173` を開くとテストできる
-
-### CSS
 
 CSSの構造：
 
 ```txt
 │  main
 │  # 全体のCSS
+│
 │  form
 │  # フォーム用CSS
+│
 │  general
 │  # ボタン等
 │
@@ -38,3 +38,7 @@ CSSの構造：
 └─components
   # パーツごとのCSS
 ```
+
+### APIセットアップ
+
+まだ書いてない

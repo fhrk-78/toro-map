@@ -9,7 +9,7 @@ export interface mappoint extends standardDatas {
     y: number
     author: string
     contributor?: string
-    mytype: string
+    mytype: pointtype
 }
 
 export interface mapway extends standardDatas {
@@ -18,6 +18,7 @@ export interface mapway extends standardDatas {
     author: string
     contributor?: string
     color: string
+    mytype: waytype
 }
 
 export enum pointtype {
@@ -32,4 +33,17 @@ export enum pointtype {
     TRAM = 'tram',
     BUS = 'bus',
     AIRPORT = 'airport'
+}
+
+export enum waytype {
+    EXPWY = 'expwy',
+    TRAIN = 'train',
+    TRAM = 'tram',
+    MONORAIL = 'monorail',
+    RAPPIDTRAIN = 'rappidtrain',
+    BUS = 'bus',
+    AIRLINE = 'airline',
+    HIGHWAY = 'serverexpwy',
+    SERVERHIGHWAY = 'serverload',
+    LOAD = 'load'
 }

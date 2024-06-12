@@ -5,7 +5,7 @@ import { onMounted } from 'vue'
 import { useMapdataStore } from '@/stores/mapdata'
 import { SmoothGraphics } from '@pixi/graphics-smooth'
 
-import { pointtype } from '@/mapdatatypes'
+import { pointtype, waytype } from '@/mapdatatypes'
 
 import ICIcon from '@/assets/icons/anthurum84/ic.png'
 import JCTIcon from '@/assets/icons/anthurum84/jct.png'
@@ -58,7 +58,7 @@ onMounted(() => {
             x: 100,
             y: 0,
             author: 'haru7p8',
-            mytype: 'ic'
+            mytype: 'ic' as pointtype
         })
 
         mapdataStore.points.push({
@@ -67,7 +67,7 @@ onMounted(() => {
             x: -100,
             y: 0,
             author: 'haru7p8',
-            mytype: 'jct'
+            mytype: 'jct' as pointtype
         })
 
         mapdataStore.points.push({
@@ -75,7 +75,7 @@ onMounted(() => {
             x: -200,
             y: 100,
             author: 'haru7p8',
-            mytype: '_blank'
+            mytype: '_blank' as pointtype
         })
 
         mapdataStore.points.push({
@@ -84,7 +84,7 @@ onMounted(() => {
             x: -500,
             y: 150,
             author: 'haru7p8',
-            mytype: 'pa'
+            mytype: 'pa' as pointtype
         })
 
         mapdataStore.points.push({
@@ -93,16 +93,25 @@ onMounted(() => {
             x: 700,
             y: 200,
             author: 'haru7p8',
-            mytype: 'train'
+            mytype: 'train' as pointtype
         })
 
         mapdataStore.points.push({
             displayname: 'テストポイント6',
             id: 'testpoint6',
+            x: 500,
+            y: 300,
+            author: 'haru7p8',
+            mytype: 'train' as pointtype
+        })
+
+        mapdataStore.points.push({
+            displayname: 'テストポイント7',
+            id: 'testpoint7',
             x: -300,
             y: -100,
             author: 'haru7p8',
-            mytype: 'train'
+            mytype: 'train' as pointtype
         })
 
         mapdataStore.ways.push({
@@ -110,7 +119,8 @@ onMounted(() => {
             id: 'testway1',
             paths: mapdataStore.points.slice(0, 4),
             author: 'haru7p8',
-            color: '0x208000'
+            color: '0x208000',
+            mytype: 'expwy' as waytype
         })
 
         mapdataStore.ways.push({
@@ -118,7 +128,17 @@ onMounted(() => {
             id: 'testway2',
             paths: mapdataStore.points.slice(4, 6),
             author: 'haru7p8',
-            color: '0x7080e0'
+            color: '0x7080e0',
+            mytype: 'train' as waytype
+        })
+
+        mapdataStore.ways.push({
+            displayname: 'テストウェイ3',
+            id: 'testway3',
+            paths: mapdataStore.points.slice(5),
+            author: 'haru7p8',
+            color: '0xf03080',
+            mytype: 'train' as waytype
         })
 
         console.log(mapdataStore.ways)
@@ -126,7 +146,6 @@ onMounted(() => {
         for (const e of mapdataStore.ways) {
             if (e.paths.length < 2) continue
             let waycolor = parseInt(e.color, 16)
-            console.log(e.color, waycolor)
             const i = mapdataStore.localways.push(new SmoothGraphics()) - 1
             mapdataStore.localways[i].lineStyle({
                 width: 5,
