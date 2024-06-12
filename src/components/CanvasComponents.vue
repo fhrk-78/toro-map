@@ -5,10 +5,20 @@ import { onMounted } from 'vue'
 import { useMapdataStore } from '@/stores/mapdata'
 import { SmoothGraphics } from '@pixi/graphics-smooth'
 
+import { pointtype } from '@/mapdatatypes'
+
 import ICIcon from '@/assets/icons/anthurum84/ic.png'
 import JCTIcon from '@/assets/icons/anthurum84/jct.png'
 import PAIcon from '@/assets/icons/anthurum84/pa.png'
 import SAIcon from '@/assets/icons/anthurum84/sa.png'
+
+import MonorailIcon from '@/assets/icons/googleicons/monorail_48dp_FILL1_wght400_GRAD0_opsz48.svg'
+import SubwayIcon from '@/assets/icons/googleicons/subway_48dp_FILL1_wght400_GRAD0_opsz48.svg'
+import TrainIcon from '@/assets/icons/googleicons/train_48dp_FILL1_wght400_GRAD0_opsz48.svg'
+import TramIcon from '@/assets/icons/googleicons/tram_48dp_FILL1_wght400_GRAD0_opsz48.svg'
+
+import BusIcon from '@/assets/icons/googleicons/directions_bus_48dp_FILL1_wght400_GRAD0_opsz48.svg'
+import AirportIcon from '@/assets/icons/googleicons/flight_48dp_FILL1_wght400_GRAD0_opsz48.svg'
 
 onMounted(() => {
     ;(async () => {
@@ -77,29 +87,49 @@ onMounted(() => {
             mytype: 'pa'
         })
 
+        mapdataStore.points.push({
+            displayname: 'テストポイント5',
+            id: 'testpoint5',
+            x: 700,
+            y: 200,
+            author: 'haru7p8',
+            mytype: 'train'
+        })
+
+        mapdataStore.points.push({
+            displayname: 'テストポイント6',
+            id: 'testpoint6',
+            x: -300,
+            y: -100,
+            author: 'haru7p8',
+            mytype: 'train'
+        })
+
         mapdataStore.ways.push({
             displayname: 'テストウェイ1',
             id: 'testway1',
-            paths: mapdataStore.points,
+            paths: mapdataStore.points.slice(0, 4),
             author: 'haru7p8',
-            mytype: 'expwy'
+            color: '0x208000'
         })
+
+        mapdataStore.ways.push({
+            displayname: 'テストウェイ2',
+            id: 'testway2',
+            paths: mapdataStore.points.slice(4, 6),
+            author: 'haru7p8',
+            color: '0x7080e0'
+        })
+
+        console.log(mapdataStore.ways)
 
         for (const e of mapdataStore.ways) {
             if (e.paths.length < 2) continue
-            let waycolor
-            switch (e.mytype) {
-                case 'expwy':
-                    waycolor = 0x248a0e
-                    break
-
-                default:
-                    waycolor = 0x000
-                    break
-            }
+            let waycolor = parseInt(e.color, 16)
+            console.log(e.color, waycolor)
             const i = mapdataStore.localways.push(new SmoothGraphics()) - 1
             mapdataStore.localways[i].lineStyle({
-                width: 10,
+                width: 5,
                 color: waycolor
             })
             mapdataStore.localways[i].moveTo(e.paths[0].x, e.paths[0].y)
@@ -113,21 +143,41 @@ onMounted(() => {
         for (const e of mapdataStore.points) {
             let pointtexture
             switch (e.mytype) {
-                case '_blank':
+                case pointtype._BLANK:
                     pointtexture = PIXI.Texture.EMPTY
                     break
 
-                case 'ic':
+                case pointtype.IC:
                     pointtexture = PIXI.Texture.from(ICIcon)
                     break
-                case 'jct':
+                case pointtype.JCT:
                     pointtexture = PIXI.Texture.from(JCTIcon)
                     break
-                case 'pa':
+                case pointtype.PA:
                     pointtexture = PIXI.Texture.from(PAIcon)
                     break
-                case 'sa':
+                case pointtype.SA:
                     pointtexture = PIXI.Texture.from(SAIcon)
+                    break
+
+                case pointtype.TRAIN:
+                    pointtexture = PIXI.Texture.from(TrainIcon)
+                    break
+                case pointtype.SUBWAY:
+                    pointtexture = PIXI.Texture.from(SubwayIcon)
+                    break
+                case pointtype.MONORAIL:
+                    pointtexture = PIXI.Texture.from(MonorailIcon)
+                    break
+                case pointtype.TRAM:
+                    pointtexture = PIXI.Texture.from(TramIcon)
+                    break
+
+                case pointtype.BUS:
+                    pointtexture = PIXI.Texture.from(BusIcon)
+                    break
+                case pointtype.AIRPORT:
+                    pointtexture = PIXI.Texture.from(AirportIcon)
                     break
 
                 default:

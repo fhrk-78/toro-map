@@ -17,5 +17,19 @@ export interface mapway extends standardDatas {
     paths: Array<mappoint>
     author: string
     contributor?: string
-    mytype: string
+    color: string
+}
+
+export enum pointtype {
+    _BLANK = '_blank',
+    IC = 'ic',
+    JCT = 'jct',
+    PA = 'pa',
+    SA = 'sa',
+    TRAIN = 'train',
+    SUBWAY = 'subway',
+    MONORAIL = 'monorail',
+    TRAM = 'tram',
+    BUS = 'bus',
+    AIRPORT = 'airport'
 }

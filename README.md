@@ -1,39 +1,40 @@
-# toromap
+# TOROMap
 
-This template should help get you started developing with Vue 3 in Vite.
+## セットアップ
 
-## Recommended IDE Setup
+### Node.js/Gitをインストール
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+### コマンドプロンプトを起動
 
-## Type Support for `.vue` Imports in TS
+1行ずつ実行する
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
+```ps1
+> git clone https://github.com/TORO-Server/toro-map.git
+> cd toro-map
+> npm install
+> npm run dev
 ```
 
-### Compile and Hot-Reload for Development
+## 編集
 
-```sh
-npm run dev
-```
+コマンドプロンプトを起動しながらファイルを編集
 
-### Type-Check, Compile and Minify for Production
+`https://localhost:5173` を開くとテストできる
 
-```sh
-npm run build
-```
+### CSS
 
-### Lint with [ESLint](https://eslint.org/)
+CSSの構造：
 
-```sh
-npm run lint
+```txt
+│  main
+│  # 全体のCSS
+│  form
+│  # フォーム用CSS
+│  general
+│  # ボタン等
+│
+├─views
+│ # ページごとのCSS
+└─components
+  # パーツごとのCSS
 ```
