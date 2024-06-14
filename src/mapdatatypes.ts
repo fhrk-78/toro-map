@@ -8,15 +8,15 @@ export interface mappoint extends standardDatas {
     x: number
     y: number
     author: string
-    contributor?: string
+    contributor?: string[]
     mytype: pointtype
 }
 
 export interface mapway extends standardDatas {
-    displayname: string
+    displayname?: string
     paths: Array<mappoint>
     author: string
-    contributor?: string
+    contributor?: string[]
     color: string
     mytype: waytype
 }

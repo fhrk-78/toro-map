@@ -10,7 +10,7 @@ Node.js/Gitをインストールする必要があります
 
 ```ps1
 > git clone https://github.com/TORO-Server/toro-map.git
-> cd toro-map/client
+> cd toro-map
 > npm install
 > npm run dev
 ```
