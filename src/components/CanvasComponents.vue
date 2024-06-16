@@ -5,7 +5,7 @@ import { onMounted } from 'vue'
 import { useMapdataStore } from '@/stores/mapdata'
 import { SmoothGraphics } from '@pixi/graphics-smooth'
 
-import { pointtype, waytype } from '@/mapdatatypes'
+import { pointtype, type mappoint, type fv1, fv1pointscv, fv1linescv } from '@/mapdatatypes'
 
 import ICIcon from '@/assets/icons/anthurum84/ic.png'
 import JCTIcon from '@/assets/icons/anthurum84/jct.png'
@@ -44,116 +44,84 @@ onMounted(() => {
 
         viewport.drag().pinch().wheel().decelerate()
 
-        viewport.position.set(app.screen.width / 2, app.screen.height / 2)
+        viewport.position.set(app.screen.width / 2, app.screen.height / 2 + 2000)
+        viewport.setZoom(0.1, true)
 
-        mapdataStore.localpoints = []
-        mapdataStore.localways = []
+        if (!mapdataStore.isFetched) {
+            mapdataStore.localpoints = []
+            mapdataStore.localways = []
+            mapdataStore.points = []
+            mapdataStore.ways = []
 
-        //dev
-        mapdataStore.points = []
-        mapdataStore.ways = []
-        mapdataStore.points.push({
-            displayname: 'テストポイント1',
-            id: 'testpoint1',
-            x: 100,
-            y: 0,
-            author: 'haru7p8',
-            mytype: 'ic' as pointtype
-        })
+            let dbfetch = await fetch('https://script.google.com/macros/s/AKfycbyZ13-e5en9qNcWIwoevsrSDAIMt7jTDIcHGecxCC2uyAgL9hidHRo7JycgxdmB3p98/exec', {
+                mode: 'cors'
+            })
 
-        mapdataStore.points.push({
-            displayname: 'テストポイント2',
-            id: 'testpoint2',
-            x: -100,
-            y: 0,
-            author: 'haru7p8',
-            mytype: 'jct' as pointtype
-        })
+            if (dbfetch.ok) {
+                let dbjson = (await dbfetch.json()) as fv1
 
-        mapdataStore.points.push({
-            id: 'testpoint3',
-            x: -200,
-            y: 100,
-            author: 'haru7p8',
-            mytype: '_blank' as pointtype
-        })
+                for (const e of dbjson.points) {
+                    mapdataStore.points.push({
+                        id: e[0],
+                        displayname: e[1],
+                        author: e[2],
+                        x: e[3],
+                        y: e[4],
+                        mytype: fv1pointscv(e[5])
+                    })
+                }
 
-        mapdataStore.points.push({
-            displayname: 'テストポイント4',
-            id: 'testpoint4',
-            x: -500,
-            y: 150,
-            author: 'haru7p8',
-            mytype: 'pa' as pointtype
-        })
+                for (const e of dbjson.lines) {
+                    const lineall = e[3].split('\n')
+                    let linelist = new Array<mappoint>()
 
-        mapdataStore.points.push({
-            displayname: 'テストポイント5',
-            id: 'testpoint5',
-            x: 700,
-            y: 200,
-            author: 'haru7p8',
-            mytype: 'train' as pointtype
-        })
+                    for (const line of lineall) {
+                        let catcherrorq = new Array<string>()
 
-        mapdataStore.points.push({
-            displayname: 'テストポイント6',
-            id: 'testpoint6',
-            x: 500,
-            y: 300,
-            author: 'haru7p8',
-            mytype: 'train' as pointtype
-        })
+                        let findid = mapdataStore.points.find((es) => {
+                            catcherrorq.push(es.id)
+                            return es.id.replace(' ', '') == line
+                        })
+                        if (findid == undefined) {
+                            console.error(line + ': Not found : ' + catcherrorq.join(',') + linelist)
+                            continue
+                        }
+                        linelist.push(findid as mappoint)
+                    }
 
-        mapdataStore.points.push({
-            displayname: 'テストポイント7',
-            id: 'testpoint7',
-            x: -300,
-            y: -100,
-            author: 'haru7p8',
-            mytype: 'train' as pointtype
-        })
+                    mapdataStore.ways.push({
+                        id: e[0],
+                        displayname: e[1],
+                        author: e[2],
+                        paths: linelist,
+                        color: e[4],
+                        mytype: fv1linescv(e[5])
+                    })
+                }
 
-        mapdataStore.ways.push({
-            displayname: 'テストウェイ1',
-            id: 'testway1',
-            paths: mapdataStore.points.slice(0, 4),
-            author: 'haru7p8',
-            color: '0x208000',
-            mytype: 'expwy' as waytype
-        })
+                console.info('Fetch completed', dbjson)
+                console.info('Add Completed', mapdataStore.points, mapdataStore.ways)
 
-        mapdataStore.ways.push({
-            displayname: 'テストウェイ2',
-            id: 'testway2',
-            paths: mapdataStore.points.slice(4, 6),
-            author: 'haru7p8',
-            color: '0x7080e0',
-            mytype: 'train' as waytype
-        })
-
-        mapdataStore.ways.push({
-            displayname: 'テストウェイ3',
-            id: 'testway3',
-            paths: mapdataStore.points.slice(5),
-            author: 'haru7p8',
-            color: '0xf03080',
-            mytype: 'train' as waytype
-        })
-
-        console.log(mapdataStore.ways)
+                mapdataStore.isFetched = true
+            } else {
+                //
+            }
+        }
 
         for (const e of mapdataStore.ways) {
             if (e.paths.length < 2) continue
             let waycolor = parseInt(e.color, 16)
             const i = mapdataStore.localways.push(new SmoothGraphics()) - 1
             mapdataStore.localways[i].lineStyle({
-                width: 5,
+                width: 20,
                 color: waycolor
             })
+            if (!(e.paths[0].x && e.paths[0].y)) continue
             mapdataStore.localways[i].moveTo(e.paths[0].x, e.paths[0].y)
             for (let j = 1; j < e.paths.length; j++) {
                 const elm = e.paths[j]
+                console.log(elm.id, elm.x, elm.y)
+                if (!(elm.x && elm.y)) continue
                 mapdataStore.localways[i].lineTo(elm.x, elm.y)
             }
             viewport.addChild(mapdataStore.localways[i] as SmoothGraphics)
@@ -207,7 +175,16 @@ onMounted(() => {
             mapdataStore.localpoints[i].width = mapdataStore.localpoints[i].height = 30
             mapdataStore.localpoints[i].position.set(e.x, e.y)
             mapdataStore.localpoints[i].anchor.set(0.5)
+            console.log(e.id, mapdataStore.localpoints[i].position._x, mapdataStore.localpoints[i].position._y)
         }
+
+        //@ts-ignore
+        viewport.on('zoomed', (zoom) => {
+            if (zoom == undefined) return
+            for (const e of mapdataStore.localpoints) {
+                e.scale.set(30 / zoom.x)
+            }
+        })
     })()
 })
 </script>

@@ -5,6 +5,7 @@ import type { SmoothGraphics } from '@pixi/graphics-smooth'
 
 export const useMapdataStore = defineStore('mapdatastore', {
     state: () => ({
+        isFetched: false,
         points: new Array<mappoint>(),
         ways: new Array<mapway>(),
         localpoints: new Array<PIXI.Sprite>(),
