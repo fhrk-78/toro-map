@@ -40,11 +40,12 @@ export enum waytype {
     AIRLINE = 'airline',
     HIGHWAY = 'serverexpwy',
     SERVERHIGHWAY = 'serverload',
-    ROAD = 'road'
+    ROAD = 'road',
+    _BLANK = '_blank'
 }
 
 export interface fv1 {
-    points: [[string, string, string, number, number, string]]
+    points: [[string, string, string, number | string, number | string, string]]
     lines: [[string, string, string, string, string, string]]
 }
 

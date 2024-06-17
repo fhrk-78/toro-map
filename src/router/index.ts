@@ -2,9 +2,9 @@ import { createRouter, createWebHashHistory /*createWebHistory*/ } from 'vue-rou
 
 import About from '@/views/AboutView.vue'
 import Main from '@/views/MainView.vue'
-import Mypage from '@/views/MypageView.vue'
+
+import Theme from '@/views/ThemeView.vue'
 import Settings from '@/views/SettingsView.vue'
-import GroupView from '@/views/GroupsView.vue'
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -21,14 +21,9 @@ const router = createRouter({
             component: Main
         },
         {
-            path: '/groups',
-            name: 'groups',
-            component: GroupView
-        },
-        {
-            path: '/mypage',
-            name: 'mypage',
-            component: Mypage
+            path: '/theme',
+            name: 'theme',
+            component: Theme
         },
         {
             path: '/settings',

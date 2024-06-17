@@ -65,8 +65,8 @@ onMounted(() => {
                         id: e[0],
                         displayname: e[1],
                         author: e[2],
-                        x: e[3],
-                        y: e[4],
+                        x: e[3] == '' ? undefined : (e[3] as number),
+                        y: e[4] == '' ? undefined : (e[4] as number),
                         mytype: fv1pointscv(e[5])
                     })
                 }
@@ -125,9 +125,11 @@ onMounted(() => {
                 mapdataStore.localways[i].lineTo(elm.x, elm.y)
             }
             viewport.addChild(mapdataStore.localways[i] as SmoothGraphics)
+            console.log(mapdataStore.localways)
         }
 
         for (const e of mapdataStore.points) {
+            if (e.x == undefined || e.y == undefined) continue
             let pointtexture
             switch (e.mytype) {
                 case pointtype._BLANK:
@@ -172,19 +174,16 @@ onMounted(() => {
                     break
             }
             const i = mapdataStore.localpoints.push(viewport.addChild(new PIXI.Sprite(pointtexture))) - 1
-            mapdataStore.localpoints[i].width = mapdataStore.localpoints[i].height = 30
+            mapdataStore.localpoints[i].width = mapdataStore.localpoints[i].height = 100
             mapdataStore.localpoints[i].position.set(e.x, e.y)
             mapdataStore.localpoints[i].anchor.set(0.5)
+
+            mapdataStore.localpoints[i].eventMode = 'dynamic'
+            mapdataStore.localpoints[i].on('click', () => {
+                console.log(e)
+            })
             console.log(e.id, mapdataStore.localpoints[i].position._x, mapdataStore.localpoints[i].position._y)
         }
-
-        //@ts-ignore
-        viewport.on('zoomed', (zoom) => {
-            if (zoom == undefined) return
-            for (const e of mapdataStore.localpoints) {
-                e.scale.set(30 / zoom.x)
-            }
-        })
     })()
 })
 </script>

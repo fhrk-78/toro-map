@@ -22,8 +22,7 @@ const currentRouterName = computed(() => route.name)
         </div>
 
         <div class="sidecontentgroup">
-            <router-link class="sidecontent igroup bottom" :class="{ focused: currentRouterName == 'groups' }" to="/groups"></router-link>
-            <router-link class="sidecontent iaccount bottom" :class="{ focused: currentRouterName == 'mypage' }" to="/mypage"></router-link>
+            <router-link class="sidecontent itheme bottom" :class="{ focused: currentRouterName == 'theme' }" to="/theme"></router-link>
             <router-link class="sidecontent isettings bottom" :class="{ focused: currentRouterName == 'settings' }" to="/settings"></router-link>
         </div>
     </div>

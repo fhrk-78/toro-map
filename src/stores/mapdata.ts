@@ -9,6 +9,16 @@ export const useMapdataStore = defineStore('mapdatastore', {
         points: new Array<mappoint>(),
         ways: new Array<mapway>(),
         localpoints: new Array<PIXI.Sprite>(),
-        localways: new Array<SmoothGraphics>()
+        localways: new Array<SmoothGraphics>(),
+        currentDirections: new Array<mapway>(),
+        directionsNow: {
+            title: 'ようこそ',
+            subtitle: '多機能交通地図アプリ(仮)'
+        },
+        directionsResultNow: {
+            distance: 0,
+            paths: new Array<mappoint>(),
+            ways: new Array<mapway>()
+        }
     })
 })
