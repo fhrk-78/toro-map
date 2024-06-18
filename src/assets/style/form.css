@@ -1,0 +1,17 @@
+main {
+    margin-left: 5vw;
+}
+
+main * {
+    margin: 10px;
+}
+
+input[type=checkbox] {
+    width: 20px;
+    height: 20px;
+}
+
+label {
+    font-size: 1.2rem;
+    transform: rotate(0.05deg);
+}

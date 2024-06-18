@@ -1,27 +1,40 @@
-## 概要
+# TOROMap
 
-[TORO乗換案内アプリ](https://github.com/TORO-Server/toroapp_transfar) をベースにビジュアルや機能を一新したTOROの交通をまとめたアプリです
+## Client セットアップ
 
-## フォルダ
+Node.js/Gitをインストールする必要があります
 
+### コマンドプロンプトを起動
+
+1行ずつ実行する
+
+```ps1
+> git clone https://github.com/TORO-Server/toro-map.git
+> cd toro-map
+> npm install
+> npm run dev
 ```
-root             # 各種コンフィグと公開用ファイルが置いてあります
-├─assets         # リソース類全般を保存しています
-│  ├─icons         # 開発/ビルドに必要なGoogleIconsのアイコンを入れています (Apache2.0)
-│  └─other         # その他のリソースはここに
-├─script         # Webpackビルド済みファイルをここに出力する
-├─src            # TypeScriptソース
-└─stylesheets    # Sassソース
+
+### CSS編集
+
+コマンドプロンプトを起動しながらファイルを編集
+
+`https://localhost:5173` を開くとテストできる
+
+CSSの構造：
+
+```txt
+│  main
+│  # 全体のCSS
+│
+│  form
+│  # フォーム用CSS
+│
+│  general
+│  # ボタン等
+│
+├─views
+│ # ページごとのCSS
+└─components
+  # パーツごとのCSS
 ```
-
-## 開発
-
-`npm run build` 開発用ビルド
-`npm run prod ` 公開用ビルド
-
-## リリースノート
-
-| バージョン     | 機能              | Web    | 状態       |
-| ------------- | ----------------- | ------ | --------- |
-| v0.1 (Alpha)  | 鉄道の経路計算機能  | Alpha  | リリース前 |
-| v1.0 (Stable) | 道路対応           | Stable | 計画中     |
