@@ -107,3 +107,25 @@
         transform: scale(1);
     }
 }
+
+ul.resultarea li {
+    list-style: none;
+}
+
+ul.resultarea li {
+    padding: 2px;
+    padding-left: 5px;
+    margin-left: 10px;
+    border-left: solid gray 5px;
+    font-size: 1.5rem;
+}
+
+ul.resultarea li.point_transfer {
+    border-width: 10px;
+}
+
+ul.resultarea li.way {
+    font-size: 1rem;
+    color: black;
+    opacity: 0.5;
+}

@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useMapdataStore } from '@/stores/mapdata'
+import { useDirectionsStore } from '@/stores/directions'
 import { waytype, type mappoint, type mapway } from '@/mapdatatypes'
 
 let isDirectionsHide = ref(false)
-let mapdataStore = ref(useMapdataStore())
+let mapdataStore = useMapdataStore()
+let directionsStore = useDirectionsStore()
 
 let startp = ref('')
 let endp = ref('')
 let typepreset = ref('any')
+
+let resultHTML = ref('')
 
 async function reverse() {
     let cs, ce
@@ -20,6 +24,17 @@ async function reverse() {
 }
 
 type Graph = { [node: string]: { [neighbor: string]: { distance: number; path: mapway } } }
+
+function findPath(A: string, B: string, paths: mapway[]) {
+    for (const path of paths) {
+        for (let i = 0; i < path.paths.length - 1; i++) {
+            if ((path.paths[i].id === A && path.paths[i + 1].id === B) || (path.paths[i].id === B && path.paths[i + 1].id === A)) {
+                return path
+            }
+        }
+    }
+    return null
+}
 
 async function dijkstra(graph: Graph, start: string, end: string): Promise<{ distance: number; path: string[]; ways: mapway[] }> {
     let distance: { [node: string]: number } = {}
@@ -33,6 +48,7 @@ async function dijkstra(graph: Graph, start: string, end: string): Promise<{ dis
     }
     distance[start] = 0
     paths[start] = [start]
+
     let queue: string[] = [start]
     while (queue.length > 0) {
         let currentNode = queue.shift()!
@@ -40,10 +56,10 @@ async function dijkstra(graph: Graph, start: string, end: string): Promise<{ dis
             let newDistance = distance[currentNode] + graph[currentNode][neighbor].distance
             if (newDistance < distance[neighbor]) {
                 distance[neighbor] = newDistance
-                paths[neighbor] = [...paths[currentNode], neighbor]
-                ways[neighbor] = [...ways[currentNode], graph[currentNode][neighbor].path]
                 queue.push(neighbor)
             }
+            paths[neighbor] = [...paths[currentNode], neighbor]
+            ways[neighbor] = [...ways[currentNode], graph[currentNode][neighbor].path]
         }
     }
     return {
@@ -57,7 +73,7 @@ const euclidianDistance = (px: number, py: number, qx: number, qy: number) => Ma
 
 function getNearNode(target: mappoint, allowedType: waytype[]) {
     let result: { [key: string]: { distance: number; path: mapway } } = {}
-    let datas = mapdataStore.value.ways
+    let datas = mapdataStore.ways
     for (let i = 0; i < datas.length; i++) {
         const e = datas[i]
         if (!allowedType.includes(e.mytype)) continue
@@ -117,30 +133,51 @@ async function calcDirections() {
             break
     }
 
-    for (const e of mapdataStore.value.points) {
+    for (const e of mapdataStore.points) {
         if (typeof e.x == 'undefined' || typeof e.y == 'undefined') continue
         graph[e.id] = await getNearNode(e, whitelist)
     }
 
     const dresult = await dijkstra(
         graph,
-        mapdataStore.value.points.find((v) => startp.value == v.displayname ?? '')?.id ?? '',
-        mapdataStore.value.points.find((v) => endp.value == v.displayname ?? '')?.id ?? ''
+        mapdataStore.points.find((v) => startp.value == v.displayname ?? '')?.id ?? '',
+        mapdataStore.points.find((v) => endp.value == v.displayname ?? '')?.id ?? ''
     )
 
     console.log(dresult)
 
-    mapdataStore.value.directionsResultNow = {
+    mapdataStore.directionsResultNow = {
         distance: dresult.distance,
         paths: [],
         ways: []
     }
 
     for (const elm of dresult.path) {
-        mapdataStore.value.directionsResultNow.paths.push(mapdataStore.value.points.find((v) => v.id == elm)!)
+        mapdataStore.directionsResultNow.paths.push(mapdataStore.points.find((v) => v.id == elm)!)
     }
 
-    mapdataStore.value.directionsResultNow.ways = dresult.ways
+    const spoint = mapdataStore.directionsResultNow.paths[0]
+    const sway = findPath(mapdataStore.directionsResultNow.paths[0].id, mapdataStore.directionsResultNow.paths[1].id, mapdataStore.ways)
+
+    resultHTML.value = `<li style="border-color: black;" class="point_transfer"><span>${spoint.displayname ?? spoint.id} / ${spoint.x} ${spoint.y}</span></li>
+    <li style="border-color: #${(sway ?? { color: '0x000000' }).color.slice(2)};" class="way"><span>${(sway ?? { displayname: 'ERROR' }).displayname}</span></li>`
+
+    let prevway = null
+
+    mapdataStore.directionsResultNow.ways = dresult.ways
+
+    for (let i = 1; i < mapdataStore.directionsResultNow.paths.length - 1; i++) {
+        const point = mapdataStore.directionsResultNow.paths[i]
+        const way = mapdataStore.directionsResultNow.ways[i]
+        resultHTML.value += `
+        <li style="border-color: #${(way.color ?? '0x000000').slice(2)};" class="${prevway != null && way.id == prevway.id ? 'point_via' : 'point_transfer'}"><span>${point.displayname ?? point.id} / ${point.x} ${point.y}</span></li>
+        <li style="border-color: #${(way.color ?? '0x000000').slice(2)};" class="way"><span>${way.displayname ?? way.id}</span></li>
+        `
+        prevway = way
+    }
+    resultHTML.value += `<li style="border-color: black;" class="point_transfer"><span>${endp.value}</span></li>`
+
+    directionsStore.graphics = mapdataStore.directionsResultNow.paths
 }
 
 // @ts-ignore
@@ -177,9 +214,7 @@ const updateTypePreset = (event) => (typepreset.value = event.target.value)
             <a class="btn idirections" @click="calcDirections()"></a>
         </div>
 
-        <ul class="resultarea">
-            <li></li>
-        </ul>
+        <ul class="resultarea" v-html="resultHTML"></ul>
     </div>
 </template>
 

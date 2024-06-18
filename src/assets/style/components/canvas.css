@@ -2,3 +2,42 @@
     width: 100vw;
     height: 100vh;
 }
+
+.layerselector {
+    border-radius: 15px;
+    padding: 10px;
+    margin: 10px;
+
+    position: fixed;
+    left: 7vw;
+    bottom: 2vw;
+
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+.layerselector h3 {
+    font-weight: normal;
+    font-size: 1.2rem;
+    padding-bottom: 10px;
+}
+
+.layerselector table {
+    border-spacing: 0;
+}
+
+.layerselector table thead tr th {
+    text-align: left;
+    padding-bottom: 3px;
+    border-bottom: solid 1px #333;
+    font-weight: normal;
+}
+
+.layerselector table tbody tr td label {
+    padding: 5px;
+    padding-right: 20px;
+}
+
+.layerselector table tbody tr td input {
+    padding: 5px;
+}
