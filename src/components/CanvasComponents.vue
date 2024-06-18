@@ -24,6 +24,8 @@ import AirportIcon from '@/assets/icons/googleicons/flight_48dp_FILL1_wght400_GR
 let mapdataStore = useMapdataStore()
 let directionsStore = useDirectionsStore()
 
+let dataLoadingDialog = ref(false)
+
 mapdataStore.pointVisibleLayer = [
     pointtype.AIRPORT,
     pointtype.BUS,
@@ -61,196 +63,202 @@ async function dbload() {
 
 onMounted(async () => {
     if (mapdataStore.points.length == 0) {
-        let dbfetch = await dbload()
-
-        if (dbfetch.ok) {
-            let dbjson = (await dbfetch.json()) as fv1
-
-            mapdataStore.points = []
-            mapdataStore.ways = []
-
-            for (const e of dbjson.points) {
-                mapdataStore.points.push({
-                    id: e[0],
-                    displayname: e[1],
-                    author: e[2],
-                    x: e[3] == '' ? undefined : (e[3] as number),
-                    y: e[4] == '' ? undefined : (e[4] as number),
-                    mytype: fv1pointscv(e[5])
-                })
-            }
-
-            for (const e of dbjson.lines) {
-                const lineall = e[3].split('\n')
-                let linelist = new Array<mappoint>()
-
-                for (const line of lineall) {
-                    let catcherrorq = new Array<string>()
-
-                    let findid = mapdataStore.points.find((es) => {
-                        catcherrorq.push(es.id)
-                        return es.id.replace(' ', '') == line
-                    })
-                    if (findid == undefined) {
-                        console.error(line + ': Not found : ' + catcherrorq.join(',') + linelist)
-                        continue
-                    }
-                    linelist.push(findid as mappoint)
-                }
-
-                mapdataStore.ways.push({
-                    id: e[0],
-                    displayname: e[1],
-                    author: e[2],
-                    paths: linelist,
-                    color: e[4],
-                    mytype: fv1linescv(e[5])
-                })
-            }
+        let dbfetch
+        if (mapdataStore.dbjson == null) {
+            dataLoadingDialog.value = true
+            dbfetch = await dbload()
+            mapdataStore.dbjson = (await dbfetch.json()) as fv1
+            dataLoadingDialog.value = false
         } else {
-            console.error('Error')
+            dbload()
+                .then((v) => v.json())
+                .then((v) => (mapdataStore.dbjson = v as fv1))
         }
 
-        mapdataStore.localpoints = []
-        mapdataStore.localways = []
+        mapdataStore.points = []
+        mapdataStore.ways = []
 
-        for (const e of mapdataStore.ways) {
-            if (e.paths.length < 2) continue
-            let lwidth = 0
-
-            switch (e.mytype) {
-                case waytype.ROAD:
-                    lwidth = 5
-                    break
-
-                case waytype.BUS:
-                case waytype.AIRLINE:
-                case waytype.MONORAIL:
-                case waytype.TRAM:
-                    lwidth = 10
-                    break
-
-                case waytype.HIGHWAY:
-                case waytype.TRAIN:
-                    lwidth = 15
-                    break
-
-                case waytype.EXPWY:
-                case waytype.SERVERHIGHWAY:
-                case waytype.RAPPIDTRAIN:
-                    lwidth = 20
-                    break
-            }
-
-            let waycolor = parseInt(e.color, 16)
-            const element = new SmoothGraphics()
-            element.alpha = 0.5
-            element.lineStyle({
-                width: lwidth,
-                color: waycolor
+        for (const e of mapdataStore.dbjson.points) {
+            mapdataStore.points.push({
+                id: e[0],
+                displayname: e[1],
+                author: e[2],
+                x: e[3] == '' ? undefined : (e[3] as number),
+                y: e[4] == '' ? undefined : (e[4] as number),
+                mytype: fv1pointscv(e[5])
             })
-            if (!(e.paths[0].x && e.paths[0].y)) continue
-            element.moveTo(e.paths[0].x, e.paths[0].y)
-            for (let j = 1; j < e.paths.length; j++) {
-                const elm = e.paths[j]
-                if (!(elm.x && elm.y)) continue
-                element.lineTo(elm.x, elm.y)
-            }
-            ;(element as any).LayerFilter = e.mytype
-
-            mapdataStore.localways.push(element)
         }
 
-        for (const e of mapdataStore.points) {
-            if (e.x == undefined || e.y == undefined) continue
-            let pointtexture
-            switch (e.mytype) {
-                case pointtype._BLANK:
-                    pointtexture = PIXI.Texture.EMPTY
-                    break
+        for (const e of mapdataStore.dbjson.lines) {
+            const lineall = e[3].split('\n')
+            let linelist = new Array<mappoint>()
 
-                case pointtype.IC:
-                    pointtexture = PIXI.Texture.from(ICIcon)
-                    break
-                case pointtype.JCT:
-                    pointtexture = PIXI.Texture.from(JCTIcon)
-                    break
-                case pointtype.PA:
-                    pointtexture = PIXI.Texture.from(PAIcon)
-                    break
-                case pointtype.SA:
-                    pointtexture = PIXI.Texture.from(SAIcon)
-                    break
+            for (const line of lineall) {
+                let catcherrorq = new Array<string>()
 
-                case pointtype.TRAIN:
-                    pointtexture = PIXI.Texture.from(TrainIcon)
-                    break
-                case pointtype.SUBWAY:
-                    pointtexture = PIXI.Texture.from(SubwayIcon)
-                    break
-                case pointtype.MONORAIL:
-                    pointtexture = PIXI.Texture.from(MonorailIcon)
-                    break
-                case pointtype.TRAM:
-                    pointtexture = PIXI.Texture.from(TramIcon)
-                    break
-
-                case pointtype.BUS:
-                    pointtexture = PIXI.Texture.from(BusIcon)
-                    break
-                case pointtype.AIRPORT:
-                    pointtexture = PIXI.Texture.from(AirportIcon)
-                    break
-
-                default:
-                    pointtexture = PIXI.Texture.EMPTY
-                    break
-            }
-            const element = new PIXI.Sprite(pointtexture)
-            element.width = element.height = 30
-
-            switch (e.mytype) {
-                case pointtype.AIRPORT:
-                    element.width = element.height = 200
-                    break
-
-                case pointtype.BUS:
-                    element.width = element.height = 50
-                    break
-
-                case pointtype.IC:
-                case pointtype.JCT:
-                case pointtype.PA:
-                case pointtype.SA:
-                case pointtype.TRAIN:
-                case pointtype.SUBWAY:
-                    element.width = element.height = 100
-                    break
-
-                case pointtype.MONORAIL:
-                case pointtype.TRAM:
-                    element.width = element.height = 70
-                    break
+                let findid = mapdataStore.points.find((es) => {
+                    catcherrorq.push(es.id)
+                    return es.id.replace(' ', '') == line
+                })
+                if (findid == undefined) {
+                    console.error(line + ': Not found : ' + catcherrorq.join(',') + linelist)
+                    continue
+                }
+                linelist.push(findid as mappoint)
             }
 
-            element.position.set(e.x, e.y)
-            element.anchor.set(0.5)
-
-            element.cursor = 'pointer'
-
-            element.eventMode = 'dynamic'
-
-            const title = e.displayname ?? e.id
-            const subtitle = `by ${e.author == '' ? '<Author unset>' : e.author} / ${e.x} ${e.y}`
-
-            element.on('click', () => {
-                mapdataStore.directionsNow.title = title
-                mapdataStore.directionsNow.subtitle = subtitle
+            mapdataStore.ways.push({
+                id: e[0],
+                displayname: e[1],
+                author: e[2],
+                paths: linelist,
+                color: e[4],
+                mytype: fv1linescv(e[5])
             })
-            ;(element as any).LayerFilter = e.mytype
-
-            mapdataStore.localpoints.push(element)
         }
+    } else {
+        console.error('Error')
+    }
+
+    mapdataStore.localpoints = []
+    mapdataStore.localways = []
+
+    for (const e of mapdataStore.ways) {
+        if (e.paths.length < 2) continue
+        let lwidth = 0
+
+        switch (e.mytype) {
+            case waytype.ROAD:
+                lwidth = 5
+                break
+
+            case waytype.BUS:
+            case waytype.AIRLINE:
+            case waytype.MONORAIL:
+            case waytype.TRAM:
+                lwidth = 10
+                break
+
+            case waytype.HIGHWAY:
+            case waytype.TRAIN:
+                lwidth = 15
+                break
+
+            case waytype.EXPWY:
+            case waytype.SERVERHIGHWAY:
+            case waytype.RAPPIDTRAIN:
+                lwidth = 20
+                break
+        }
+
+        let waycolor = parseInt(e.color, 16)
+        const element = new SmoothGraphics()
+        element.alpha = 0.5
+        element.lineStyle({
+            width: lwidth,
+            color: waycolor
+        })
+        if (!(e.paths[0].x && e.paths[0].y)) continue
+        element.moveTo(e.paths[0].x, e.paths[0].y)
+        for (let j = 1; j < e.paths.length; j++) {
+            const elm = e.paths[j]
+            if (!(elm.x && elm.y)) continue
+            element.lineTo(elm.x, elm.y)
+        }
+        ;(element as any).LayerFilter = e.mytype
+
+        mapdataStore.localways.push(element)
+    }
+
+    for (const e of mapdataStore.points) {
+        if (e.x == undefined || e.y == undefined) continue
+        let pointtexture
+        switch (e.mytype) {
+            case pointtype._BLANK:
+                pointtexture = PIXI.Texture.EMPTY
+                break
+
+            case pointtype.IC:
+                pointtexture = PIXI.Texture.from(ICIcon)
+                break
+            case pointtype.JCT:
+                pointtexture = PIXI.Texture.from(JCTIcon)
+                break
+            case pointtype.PA:
+                pointtexture = PIXI.Texture.from(PAIcon)
+                break
+            case pointtype.SA:
+                pointtexture = PIXI.Texture.from(SAIcon)
+                break
+
+            case pointtype.TRAIN:
+                pointtexture = PIXI.Texture.from(TrainIcon)
+                break
+            case pointtype.SUBWAY:
+                pointtexture = PIXI.Texture.from(SubwayIcon)
+                break
+            case pointtype.MONORAIL:
+                pointtexture = PIXI.Texture.from(MonorailIcon)
+                break
+            case pointtype.TRAM:
+                pointtexture = PIXI.Texture.from(TramIcon)
+                break
+
+            case pointtype.BUS:
+                pointtexture = PIXI.Texture.from(BusIcon)
+                break
+            case pointtype.AIRPORT:
+                pointtexture = PIXI.Texture.from(AirportIcon)
+                break
+
+            default:
+                pointtexture = PIXI.Texture.EMPTY
+                break
+        }
+        const element = new PIXI.Sprite(pointtexture)
+        element.width = element.height = 30
+
+        switch (e.mytype) {
+            case pointtype.AIRPORT:
+                element.width = element.height = 200
+                break
+
+            case pointtype.BUS:
+                element.width = element.height = 50
+                break
+
+            case pointtype.IC:
+            case pointtype.JCT:
+            case pointtype.PA:
+            case pointtype.SA:
+            case pointtype.TRAIN:
+            case pointtype.SUBWAY:
+                element.width = element.height = 100
+                break
+
+            case pointtype.MONORAIL:
+            case pointtype.TRAM:
+                element.width = element.height = 70
+                break
+        }
+
+        element.position.set(e.x, e.y)
+        element.anchor.set(0.5)
+
+        element.cursor = 'pointer'
+
+        element.eventMode = 'dynamic'
+
+        const title = e.displayname ?? e.id
+        const subtitle = `by ${e.author == '' ? '<Author unset>' : e.author} / ${e.x} ${e.y}`
+
+        element.on('click', () => {
+            mapdataStore.directionsNow.title = title
+            mapdataStore.directionsNow.subtitle = subtitle
+        })
+        ;(element as any).LayerFilter = e.mytype
+
+        mapdataStore.localpoints.push(element)
     }
 
     const canvasmain = document.getElementById('canvasmain') as HTMLDivElement
@@ -392,6 +400,13 @@ watch(layer_roadway, (nv) => {
 
 <template>
     <div id="canvasmain"></div>
+
+    <div class="loading_overlay hide" :class="{ hide: dataLoadingDialog }">
+        <div>
+            <span>データベースに接続中です...</span>
+            <p>初回起動の場合、取得しキャッシュする必要があります</p>
+        </div>
+    </div>
 
     <div class="layerselector">
         <h3>表示設定</h3>

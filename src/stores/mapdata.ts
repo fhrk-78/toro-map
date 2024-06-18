@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { pointtype, waytype, type mappoint, type mapway } from '@/mapdatatypes'
+import { pointtype, waytype, type mappoint, type mapway, type fv1 } from '@/mapdatatypes'
 import * as PIXI from 'pixi.js'
 import type { SmoothGraphics } from '@pixi/graphics-smooth'
 
@@ -21,6 +21,11 @@ export const useMapdataStore = defineStore('mapdatastore', {
             paths: new Array<mappoint>(),
             ways: new Array<mapway>()
         },
-        directionsPath: new Array<mappoint>()
-    })
+        directionsPath: new Array<mappoint>(),
+        dbjson: null as fv1 | null
+    }),
+    persist: {
+        storage: localStorage,
+        paths: ['dbjson']
+    }
 })

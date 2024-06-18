@@ -129,3 +129,9 @@ ul.resultarea li.way {
     color: black;
     opacity: 0.5;
 }
+
+*::selection {
+    background-color: transparent;
+    text-decoration: #333 solid underline;
+    color: #333;
+}
