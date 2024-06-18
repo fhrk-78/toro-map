@@ -91,7 +91,6 @@ function getNearNode(target: mappoint, allowedType: waytype[]) {
                 }
         }
     }
-    console.log(result)
     return result
 }
 
@@ -143,8 +142,6 @@ async function calcDirections() {
         mapdataStore.points.find((v) => startp.value == v.displayname ?? '')?.id ?? '',
         mapdataStore.points.find((v) => endp.value == v.displayname ?? '')?.id ?? ''
     )
-
-    console.log(dresult)
 
     mapdataStore.directionsResultNow = {
         distance: dresult.distance,

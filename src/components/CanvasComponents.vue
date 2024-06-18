@@ -289,7 +289,6 @@ onMounted(async () => {
     viewport.addChild(directionsGraphics)
 
     directionsStore.$subscribe(() => {
-        console.log('DirectionsStore Subscribe Called')
         const nv = directionsStore.graphics
         directionsGraphics.clear()
         directionsGraphics.lineStyle({
