@@ -1,0 +1,8 @@
+{
+    "extends": ["some-other-config-you-use", "prettier"],
+    "trailingComma": "es5",
+    "printWidth": 100,
+    "tabWidth": 4,
+    "semi": false,
+    "singleQuote": true
+}
